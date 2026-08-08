@@ -1,4 +1,6 @@
 // @ts-check
+import process from "node:process";
+
 import { defineConfig, envField } from "astro/config";
 
 import react from "@astrojs/react";
@@ -9,15 +11,16 @@ import cloudflare from "@astrojs/cloudflare";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
+  site: process.env.SITE_URL ?? "http://localhost:4321",
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
   },
-  adapter: cloudflare(),
+  adapter: cloudflare({ imageService: "compile" }),
   env: {
     schema: {
-      SUPABASE_URL: envField.string({ context: "server", access: "secret", optional: true }),
-      SUPABASE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
+      SUPABASE_KEY: envField.string({ context: "server", access: "secret" }),
     },
   },
 });

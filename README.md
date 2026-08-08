@@ -15,7 +15,7 @@ A modern, opinionated starter template for building fast, accessible web applica
 
 ## Prerequisites
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
+- Node.js v22.18.0 (as specified in `.nvmrc`)
 - npm (comes with Node.js)
 
 ## Getting Started
@@ -55,6 +55,9 @@ npm run dev
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm run cf:types` - Regenerate Cloudflare Worker binding types
+- `npm run cf:types:check` - Verify generated Worker binding types are current
+- `npm run deploy:check` - Run all checks and a Wrangler deployment dry-run
 
 ## Project Structure
 
@@ -150,25 +153,29 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys the `10x-cards` Worker through Cloudflare Workers Builds. A successful push to `main` runs the
+validation command and deploys through Cloudflare; GitHub Actions is not part of the CI or deployment path.
 
-1. Build the project:
-
-```bash
-npm run build
-```
-
-2. Deploy with Wrangler:
+Before pushing, run the same validation used by Workers Builds:
 
 ```bash
-npx wrangler deploy
+npm run deploy:check
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+The Workers Builds configuration uses:
+
+- Production branch: `main`
+- Build command: `npm run deploy:check`
+- Deploy command: `npx wrangler deploy`
+- Preview URLs and non-production branch builds: disabled
+
+Set `SUPABASE_URL` and `SUPABASE_KEY` as encrypted Worker secrets. Set `SITE_URL` to the production Worker URL as a
+non-secret Workers Builds variable so Astro generates canonical URLs correctly.
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+Cloudflare Workers Builds is the sole CI and deployment system. Do not add GitHub deployment secrets or a parallel
+GitHub Actions deployment workflow.
 
 ## License
 
