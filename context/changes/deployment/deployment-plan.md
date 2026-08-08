@@ -139,7 +139,7 @@ Deploy one production Cloudflare Worker, `10x-cards`, backed by one hosted Supab
 - [ ] Confirm Workers Builds uses `.nvmrc` and the Wrangler version from `package.json`.
 - [ ] Review settings before enabling the connection; the first build may deploy the current `main`.
 - [ ] Treat enabling the Git connection as explicit approval for the first production deployment.
-- [ ] Confirm no GitHub Actions workflows or GitHub deployment secrets remain.
+- [x] Confirm no GitHub Actions workflows or GitHub deployment secrets remain.
 - [ ] Verify a successful push to `main` creates one Cloudflare build and one deployment, while a failed build never
   reaches the deploy command.
 
