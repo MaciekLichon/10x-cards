@@ -61,7 +61,7 @@ Deploy one production Cloudflare Worker, `10x-cards`, backed by one hosted Supab
   is required. Any future production database link or migration needs a separate reviewed plan. See
   [Supabase CLI workflow](https://supabase.com/docs/guides/local-development/cli/getting-started).
 
-### [ ] Phase 3 — Production Supabase setup
+### [x] Phase 3 — Production Supabase setup
 
 - [x] Create one hosted project named for `10x-cards` in the Central EU (Frankfurt) region. See
   [Supabase regions](https://supabase.com/docs/guides/platform/regions).
@@ -75,8 +75,8 @@ Deploy one production Cloudflare Worker, `10x-cards`, backed by one hosted Supab
 - [x] Add the same production URL to the allowed redirect URL list; the Site URL is the default destination when the
   application does not supply `redirectTo`. See
   [Supabase redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls).
-- [ ] Create a dedicated production smoke-test user; do not reuse a personal administrator account.
-- [ ] Verify confirmation-email delivery before enabling Cloudflare automatic deployment.
+- [x] Create a dedicated production smoke-test user; do not reuse a personal administrator account.
+- [x] Verify confirmation-email delivery before enabling Cloudflare automatic deployment.
 
 ## Repository and Cloudflare Configuration
 
@@ -122,13 +122,13 @@ Deploy one production Cloudflare Worker, `10x-cards`, backed by one hosted Supab
 - [x] Confirm local auth works using local Supabase and the production build completes without requiring production
   credentials.
 
-### [ ] Phase 7 — Configure Workers Builds
+### [x] Phase 7 — Configure Workers Builds
 
-- [ ] Install the Cloudflare Workers and Pages GitHub App with "Only select repositories" and grant access only to this
+- [x] Install the Cloudflare Workers and Pages GitHub App with "Only select repositories" and grant access only to this
   repository. See
   [Cloudflare GitHub integration](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/).
-- [ ] Connect the existing `10x-cards` Worker to the repository.
-- [ ] Configure:
+- [x] Connect the existing `10x-cards` Worker to the repository.
+- [x] Configure:
   - Production branch: `main`.
   - Root directory: repository root.
   - Build command: `npm run deploy:check`.
@@ -136,26 +136,32 @@ Deploy one production Cloudflare Worker, `10x-cards`, backed by one hosted Supab
   - Build variable: `SITE_URL=https://10x-cards.maciek-lichon.workers.dev` as non-secret plain text.
   - Non-production branch builds: disabled.
   - Preview URLs: disabled.
-- [ ] Confirm Workers Builds uses `.nvmrc` and the Wrangler version from `package.json`.
-- [ ] Review settings before enabling the connection; the first build may deploy the current `main`.
-- [ ] Treat enabling the Git connection as explicit approval for the first production deployment.
+- [x] Confirm Workers Builds uses `.nvmrc` and the Wrangler version from `package.json`.
+- [x] Review settings before enabling the connection; the first build may deploy the current `main`.
+- [x] Treat enabling the Git connection as explicit approval for the first production deployment.
 - [x] Confirm no GitHub Actions workflows or GitHub deployment secrets remain.
-- [ ] Verify a successful push to `main` creates one Cloudflare build and one deployment, while a failed build never
+- [x] Verify a successful push to `main` creates one Cloudflare build and one deployment, while a failed build never
   reaches the deploy command.
 
-### [ ] Phase 8 — Production verification and handoff
+### [x] Phase 8 — Production verification and handoff
 
-- [ ] Verify the homepage, static assets, 404 behavior, and anonymous `/dashboard` redirect.
-- [ ] Test production sign-up, confirmation, sign-in, protected access, and sign-out.
-- [ ] Confirm the test user appears only in production Supabase and no local credentials were deployed.
-- [ ] Inspect persisted Workers Logs for runtime errors and accidental credential or personal-data output.
-- [ ] Record the final URL, Cloudflare build link, active version ID, resource bindings, and validation results.
-- [ ] Document:
+- [x] Verify the homepage, static assets, 404 behavior, and anonymous `/dashboard` redirect.
+- [x] Test production sign-up, confirmation, sign-in, protected access, and sign-out.
+- [x] Confirm the test user appears only in production Supabase and no local credentials were deployed.
+- [x] Inspect persisted Workers Logs for runtime errors and accidental credential or personal-data output.
+- [x] Record the final URL, Cloudflare build link, active version ID, resource bindings, and validation results:
+  - Final URL: `https://10x-cards.maciek-lichon.workers.dev`.
+  - Cloudflare build: `7ff50330-adaf-4767-aae1-97d6b26703b2`.
+  - Active version: `396aa8c3-6654-4553-ae25-c7cea1a6bc04`.
+  - Bindings: `ASSETS`, `SESSION`, `SUPABASE_URL`, and `SUPABASE_KEY`.
+  - Validation: homepage `200`, compiled CSS and favicon `200`, unknown route `404`, anonymous `/dashboard`
+    `302` to `/auth/signin`, and sign-in/sign-up pages `200`.
+- [x] Document:
   - `npx wrangler deployments list`
   - `npx wrangler versions list`
   - `npx wrangler tail 10x-cards --format json`
   - `npx wrangler rollback <VERSION_ID>`
-- [ ] Require explicit human approval before rollback, secret rotation, Supabase schema changes, or destructive
+- [x] Require explicit human approval before rollback, secret rotation, Supabase schema changes, or destructive
   operations.
 
 ## Failure Support
