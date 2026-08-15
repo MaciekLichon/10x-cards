@@ -1,0 +1,1 @@
+-- Intentionally empty. Verification creates transient local users and flashcards.
