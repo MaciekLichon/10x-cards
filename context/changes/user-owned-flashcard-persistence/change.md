@@ -1,9 +1,9 @@
 ---
 change_id: user-owned-flashcard-persistence
 title: Minimalny bezpieczny zapis fiszek użytkownika
-status: implemented
+status: impl_reviewed
 created: 2026-08-15
-updated: 2026-08-15
+updated: 2026-08-16
 archived_at: null
 ---
 

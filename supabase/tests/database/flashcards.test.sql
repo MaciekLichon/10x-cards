@@ -1,6 +1,6 @@
 begin;
 
-select plan(32);
+select plan(38);
 
 select has_table('public', 'flashcards', 'flashcards table exists');
 select columns_are(
@@ -51,7 +51,7 @@ select trigger_is(
   'flashcards',
   'flashcards_set_updated_at',
   'public',
-  'set_updated_at',
+  'set_flashcards_updated_at',
   'updated_at trigger exists'
 );
 
@@ -112,15 +112,39 @@ values (
   '00000000-0000-0000-0000-000000000001',
   'Question',
   'Answer',
-  now() - interval '1 minute',
-  now() - interval '1 minute'
+  '2026-01-01 00:00:00+00'::timestamptz,
+  '2026-01-01 00:00:00+00'::timestamptz
 );
 
+select throws_ok(
+  $$insert into public.flashcards (user_id, front, back) values ('00000000-0000-0000-0000-000000000001', '', 'Answer')$$,
+  '23514',
+  null,
+  'empty front is rejected'
+);
 select throws_ok(
   $$insert into public.flashcards (user_id, front, back) values ('00000000-0000-0000-0000-000000000001', '   ', 'Answer')$$,
   '23514',
   null,
   'whitespace-only front is rejected'
+);
+select throws_ok(
+  $$insert into public.flashcards (user_id, front, back) values ('00000000-0000-0000-0000-000000000001', repeat('x', 10001), 'Answer')$$,
+  '23514',
+  null,
+  'overlong front is rejected'
+);
+select throws_ok(
+  $$insert into public.flashcards (user_id, front, back) values ('00000000-0000-0000-0000-000000000001', 'Question', '')$$,
+  '23514',
+  null,
+  'empty back is rejected'
+);
+select throws_ok(
+  $$insert into public.flashcards (user_id, front, back) values ('00000000-0000-0000-0000-000000000001', 'Question', '   ')$$,
+  '23514',
+  null,
+  'whitespace-only back is rejected'
 );
 select throws_ok(
   $$insert into public.flashcards (user_id, front, back) values ('00000000-0000-0000-0000-000000000001', 'Question', repeat('x', 10001))$$,
@@ -134,6 +158,16 @@ update public.flashcards set front = 'Updated question';
 select ok(
   (select updated_at > created_at from public.flashcards limit 1),
   'updating a flashcard advances updated_at'
+);
+select is(
+  (select created_at from public.flashcards limit 1),
+  '2026-01-01 00:00:00+00'::timestamptz,
+  'updating a flashcard preserves created_at'
+);
+select is(
+  (select user_id from public.flashcards limit 1),
+  '00000000-0000-0000-0000-000000000001'::uuid,
+  'updating a flashcard preserves user_id'
 );
 
 delete from auth.users where id = '00000000-0000-0000-0000-000000000001';

@@ -9,7 +9,7 @@ create table public.flashcards (
 
 create index flashcards_user_id_idx on public.flashcards (user_id);
 
-create or replace function public.set_updated_at()
+create function public.set_flashcards_updated_at()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -23,7 +23,7 @@ $$;
 create trigger flashcards_set_updated_at
 before update on public.flashcards
 for each row
-execute function public.set_updated_at();
+execute function public.set_flashcards_updated_at();
 
 alter table public.flashcards enable row level security;
 
