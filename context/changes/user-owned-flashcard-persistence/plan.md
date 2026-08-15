@@ -301,28 +301,28 @@ does not revert PostgreSQL schema.
 
 #### Automated
 
-- [x] 1.1 Local database reset applies every migration and seed successfully: `npx supabase db reset`
-- [x] 1.2 Local database lint reports no schema or policy errors: `npx supabase db lint --local --fail-on error`
-- [x] 1.3 Database contract tests confirm the table, constraints, foreign key, trigger, RLS, and four ownership policies exist: `npx supabase test db`
+- [x] 1.1 Local database reset applies every migration and seed successfully: `npx supabase db reset` — 47479a1
+- [x] 1.2 Local database lint reports no schema or policy errors: `npx supabase db lint --local --fail-on error` — 47479a1
+- [x] 1.3 Database contract tests confirm the table, constraints, foreign key, trigger, RLS, and four ownership policies exist: `npx supabase test db` — 47479a1
 
 #### Manual
 
-- [x] 1.4 Supabase Studio shows only the six approved flashcard fields and no AI or repetition fields
-- [x] 1.5 Migration review confirms it is additive and does not target a hosted project
+- [x] 1.4 Supabase Studio shows only the six approved flashcard fields and no AI or repetition fields — 47479a1
+- [x] 1.5 Migration review confirms it is additive and does not target a hosted project — 47479a1
 
 ### Phase 2: Typed Application Contract and Local Documentation
 
 #### Automated
 
-- [ ] 2.1 Database types regenerate without an uncommitted diff
-- [ ] 2.2 Astro type synchronization succeeds: `npx astro sync`
-- [ ] 2.3 Type-aware lint succeeds: `npm run lint`
-- [ ] 2.4 Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 2.1 Database types regenerate without an uncommitted diff
+- [x] 2.2 Astro type synchronization succeeds: `npx astro sync`
+- [x] 2.3 Type-aware lint succeeds: `npm run lint`
+- [x] 2.4 Cloudflare-targeted production build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.5 README instructions can be followed from a clean local Supabase reset without undocumented database steps
-- [ ] 2.6 Generated types expose the six-field flashcard contract and the server client retains cookie-based user sessions
+- [x] 2.5 README instructions can be followed from a clean local Supabase reset without undocumented database steps
+- [x] 2.6 Generated types expose the six-field flashcard contract and the server client retains cookie-based user sessions
 
 ### Phase 3: Authenticated Isolation Proof and Final Validation
 

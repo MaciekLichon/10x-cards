@@ -10,6 +10,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
+    "db:reset": "supabase db reset",
+    "db:lint": "supabase db lint --local --fail-on error",
+    "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --local | prettier --parser typescript > src/types/database.types.ts",
+    "db:types:check": "supabase gen types typescript --local | prettier --parser typescript | diff - src/types/database.types.ts",
+    "db:verify-rls": "node scripts/verify-flashcard-rls.mjs",
     "cf:types": "wrangler types",
     "cf:types:check": "wrangler types --check",
     "deploy:check": "astro sync && npm run lint && astro check && npm run build && wrangler deploy --dry-run"

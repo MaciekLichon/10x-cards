@@ -55,6 +55,12 @@ npm run dev
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm run db:reset` - Recreate the local database from committed migrations and seed data
+- `npm run db:lint` - Lint the local database schema and fail on errors
+- `npm run db:test` - Run the pgTAP database contract tests
+- `npm run db:types` - Regenerate TypeScript types from the local database schema
+- `npm run db:types:check` - Regenerate database types and fail if the committed file changes
+- `npm run db:verify-rls` - Verify flashcard ownership through local authenticated clients
 - `npm run cf:types` - Regenerate Cloudflare Worker binding types
 - `npm run cf:types:check` - Verify generated Worker binding types are current
 - `npm run deploy:check` - Run all checks and a Wrangler deployment dry-run
@@ -87,23 +93,29 @@ Requires [Docker](https://www.docker.com/) and ~7 GB RAM.
 cp .env.example .env
 ```
 
-2. Initialize the local Supabase project (creates a `supabase/` config folder):
-
-```bash
-npx supabase init
-```
-
-3. Start the local stack (downloads Docker images on first run):
+2. Start the local stack (downloads Docker images on first run):
 
 ```bash
 npx supabase start
 ```
 
-4. Copy the credentials printed by the CLI into your `.env` and `.dev.vars`:
+3. Copy these two values from the CLI output into both `.env` and `.dev.vars`:
+
+- `SUPABASE_URL`: the value labeled **Project URL** under **APIs**
+- `SUPABASE_KEY`: the value labeled **Publishable** under **Authentication Keys**
 
 ```
 SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_KEY=<anon key from CLI output>
+SUPABASE_KEY=<publishable key from CLI output>
+```
+
+Do not use the **Secret** authentication key or either key under **Storage**. The application intentionally connects as
+an ordinary client so PostgreSQL row-level security remains enforced.
+
+4. Apply all committed migrations and the intentionally empty local seed:
+
+```bash
+npm run db:reset
 ```
 
 5. To stop the stack when done:
@@ -114,7 +126,34 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
+The reset creates `public.flashcards` with database-enforced ownership and row-level security. It affects only the local
+Supabase stack; applying migrations to a linked or hosted project is a separate reviewed deployment action.
+
+### Database development workflow
+
+After changing a migration, reset and validate the local schema, then regenerate the committed TypeScript contract:
+
+```bash
+npm run db:reset
+npm run db:lint
+npm run db:test
+npm run db:types
+npm run db:types:check
+```
+
+`npm run db:types:check` is deterministic: it compares freshly generated local types with
+`src/types/database.types.ts` and fails if they differ. Run it after a clean reset so the local schema matches the
+committed migrations.
+
+The flashcard RLS integration check is added as a separate command:
+
+```bash
+npm run db:verify-rls
+```
+
+It expects the local stack and the local `SUPABASE_URL` plus anon/publishable `SUPABASE_KEY`. The check uses ordinary
+authenticated clients; a service-role or admin client bypasses RLS and is not valid ownership evidence. Reset the local
+database before or after verification when you want a clean environment.
 
 ### Using a cloud Supabase project instead
 

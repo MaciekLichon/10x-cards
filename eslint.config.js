@@ -68,6 +68,15 @@ const astroConfig = tseslint.config({
   },
 });
 
+const generatedDatabaseTypesConfig = tseslint.config({
+  files: ["src/types/database.types.ts"],
+  rules: {
+    "@typescript-eslint/consistent-indexed-object-style": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/no-redundant-type-constituents": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -76,4 +85,5 @@ export default tseslint.config(
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
   eslintPluginPrettier,
+  generatedDatabaseTypesConfig,
 );
