@@ -328,13 +328,13 @@ does not revert PostgreSQL schema.
 
 #### Automated
 
-- [x] 3.1 Two-user and anonymous ownership matrix passes through authenticated anon-key clients
-- [x] 3.2 Clean reset followed by type generation and RLS verification succeeds in sequence
-- [x] 3.3 Astro synchronization, lint, and production build all pass
-- [x] 3.4 Working-tree inspection shows no credentials, tokens, or generated local secrets
+- [x] 3.1 Two-user and anonymous ownership matrix passes through authenticated anon-key clients — d74ddda
+- [x] 3.2 Clean reset followed by type generation and RLS verification succeeds in sequence — d74ddda
+- [x] 3.3 Astro synchronization, lint, and production build all pass — d74ddda
+- [x] 3.4 Working-tree inspection shows no credentials, tokens, or generated local secrets — d74ddda
 
 #### Manual
 
-- [x] 3.5 Verification output clearly identifies every positive and negative ownership assertion without exposing secrets
-- [x] 3.6 A deliberate local policy break makes the verification command fail, and restoring the policy makes it pass
-- [x] 3.7 No migration was applied to a hosted Supabase project during implementation
+- [x] 3.5 Verification output clearly identifies every positive and negative ownership assertion without exposing secrets — d74ddda
+- [x] 3.6 A deliberate local policy break makes the verification command fail, and restoring the policy makes it pass — d74ddda
+- [x] 3.7 No migration was applied to a hosted Supabase project during implementation — d74ddda
