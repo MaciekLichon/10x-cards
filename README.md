@@ -145,15 +145,20 @@ npm run db:types:check
 `src/types/database.types.ts` and fails if they differ. Run it after a clean reset so the local schema matches the
 committed migrations.
 
-The flashcard RLS integration check is added as a separate command:
+The flashcard RLS integration check is a separate command:
 
 ```bash
 npm run db:verify-rls
 ```
 
-It expects the local stack and the local `SUPABASE_URL` plus anon/publishable `SUPABASE_KEY`. The check uses ordinary
-authenticated clients; a service-role or admin client bypasses RLS and is not valid ownership evidence. Reset the local
-database before or after verification when you want a clean environment.
+It targets only a resettable local stack with email confirmation disabled, loads `SUPABASE_URL` and `SUPABASE_KEY` from
+the process, `.env`, or `.dev.vars`, and refuses non-loopback URLs. The check creates two transient users, prints a
+`PASS` line for every positive and negative ownership assertion, and never prints credentials or session tokens. Run
+`npm run db:reset` before the check for a known schema and afterward to remove its transient users.
+
+The command must use the local anon/publishable key. A service-role or admin client bypasses RLS and is not valid
+ownership evidence. A successful run ends with `Flashcard RLS verification passed`; any violated assertion exits with a
+non-zero status.
 
 ### Using a cloud Supabase project instead
 

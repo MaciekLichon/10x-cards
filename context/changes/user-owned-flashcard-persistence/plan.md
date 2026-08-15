@@ -314,27 +314,27 @@ does not revert PostgreSQL schema.
 
 #### Automated
 
-- [x] 2.1 Database types regenerate without an uncommitted diff
-- [x] 2.2 Astro type synchronization succeeds: `npx astro sync`
-- [x] 2.3 Type-aware lint succeeds: `npm run lint`
-- [x] 2.4 Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 2.1 Database types regenerate without an uncommitted diff — 40fce5e
+- [x] 2.2 Astro type synchronization succeeds: `npx astro sync` — 40fce5e
+- [x] 2.3 Type-aware lint succeeds: `npm run lint` — 40fce5e
+- [x] 2.4 Cloudflare-targeted production build succeeds: `npm run build` — 40fce5e
 
 #### Manual
 
-- [x] 2.5 README instructions can be followed from a clean local Supabase reset without undocumented database steps
-- [x] 2.6 Generated types expose the six-field flashcard contract and the server client retains cookie-based user sessions
+- [x] 2.5 README instructions can be followed from a clean local Supabase reset without undocumented database steps — 40fce5e
+- [x] 2.6 Generated types expose the six-field flashcard contract and the server client retains cookie-based user sessions — 40fce5e
 
 ### Phase 3: Authenticated Isolation Proof and Final Validation
 
 #### Automated
 
-- [ ] 3.1 Two-user and anonymous ownership matrix passes through authenticated anon-key clients
-- [ ] 3.2 Clean reset followed by type generation and RLS verification succeeds in sequence
-- [ ] 3.3 Astro synchronization, lint, and production build all pass
-- [ ] 3.4 Working-tree inspection shows no credentials, tokens, or generated local secrets
+- [x] 3.1 Two-user and anonymous ownership matrix passes through authenticated anon-key clients
+- [x] 3.2 Clean reset followed by type generation and RLS verification succeeds in sequence
+- [x] 3.3 Astro synchronization, lint, and production build all pass
+- [x] 3.4 Working-tree inspection shows no credentials, tokens, or generated local secrets
 
 #### Manual
 
-- [ ] 3.5 Verification output clearly identifies every positive and negative ownership assertion without exposing secrets
-- [ ] 3.6 A deliberate local policy break makes the verification command fail, and restoring the policy makes it pass
-- [ ] 3.7 No migration was applied to a hosted Supabase project during implementation
+- [x] 3.5 Verification output clearly identifies every positive and negative ownership assertion without exposing secrets
+- [x] 3.6 A deliberate local policy break makes the verification command fail, and restoring the policy makes it pass
+- [x] 3.7 No migration was applied to a hosted Supabase project during implementation
