@@ -3,7 +3,7 @@ project: 10xCards
 version: 1
 status: draft
 created: 2026-08-09
-updated: 2026-08-09
+updated: 2026-08-16
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -32,7 +32,7 @@ fiszek tworzonych z AI.
 
 | ID   | Change ID                        | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                              | Status   |
 | ---- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | -------- |
-| F-01 | user-owned-flashcard-persistence | (foundation) minimalny kontrakt trwałego zapisu fiszek użytkownika i weryfikacja izolacji danych są gotowe | —             | NFR: izolacja danych, Access Control  | ready    |
+| F-01 | user-owned-flashcard-persistence | (foundation) minimalny kontrakt trwałego zapisu fiszek użytkownika i weryfikacja izolacji danych są gotowe | —             | NFR: izolacja danych, Access Control  | done     |
 | S-01 | account-access                   | użytkownik może utworzyć konto, zalogować się i wejść do chronionej części aplikacji                       | —             | FR-001, FR-002                        | ready    |
 | S-02 | ai-flashcard-review              | użytkownik może wkleić tekst, wygenerować propozycje, poprawić je i zapisać wybrane fiszki                 | F-01, S-01    | US-01, FR-003, FR-004, FR-005, FR-006 | blocked  |
 | S-03 | personal-flashcard-collection    | użytkownik może utworzyć fiszkę ręcznie i przeglądać własną kolekcję                                       | F-01, S-01    | FR-007, FR-008                        | proposed |
@@ -74,7 +74,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Fundament jest ograniczony do własności i trwałości danych potrzebnych pierwszym przepływom; pełny model powtórek pozostaje w S-05.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -146,7 +146,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 | Roadmap ID | Change ID                        | Suggested issue title                                 | Ready for `/10x-plan` | Notes                                            |
 | ---------- | -------------------------------- | ----------------------------------------------------- | --------------------- | ------------------------------------------------ |
-| F-01       | user-owned-flashcard-persistence | Ustanów minimalny bezpieczny zapis fiszek użytkownika | yes                   | Odblokowuje S-02, S-03 i S-05.                   |
+| F-01       | user-owned-flashcard-persistence | Ustanów minimalny bezpieczny zapis fiszek użytkownika | done                  | Implementacja i przegląd zostały ukończone.      |
 | S-01       | account-access                   | Zweryfikuj dostęp do chronionej aplikacji             | yes                   | Zachowanie jest już obecne w stanie bazowym.     |
 | S-02       | ai-flashcard-review              | Dostarcz generowanie i weryfikację fiszek AI          | no                    | Najpierw ustal format i ograniczenia propozycji. |
 | S-03       | personal-flashcard-collection    | Dodaj ręczne tworzenie i przeglądanie kolekcji        | no                    | Wymaga F-01 i S-01.                              |
@@ -172,3 +172,5 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Rozbudowany monitoring aplikacyjny** — Why parked: cel szybkiego uruchomienia i działające logi platformy nie uzasadniają osobnego fundamentu przed pierwszym przepływem.
 
 ## Done
+
+- **F-01 — Minimalny kontrakt danych fiszek** (`user-owned-flashcard-persistence`) — ukończono implementację, weryfikację izolacji danych i przegląd implementacji 2026-08-16.
