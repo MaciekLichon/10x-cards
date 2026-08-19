@@ -76,6 +76,7 @@ export default function SignUpForm({ serverError }: Props) {
         placeholder="you@example.com"
         error={errors.email}
         icon={<Mail className="size-4" />}
+        required
       />
 
       <FormField
@@ -91,6 +92,7 @@ export default function SignUpForm({ serverError }: Props) {
         error={errors.password}
         hint={passwordHint}
         icon={<Lock className="size-4" />}
+        required
         endContent={
           <PasswordToggle
             visible={showPassword}
@@ -114,6 +116,7 @@ export default function SignUpForm({ serverError }: Props) {
         placeholder="Re-enter your password"
         error={errors.confirmPassword}
         icon={<Lock className="size-4" />}
+        required
         endContent={
           <PasswordToggle
             visible={showConfirmPassword}

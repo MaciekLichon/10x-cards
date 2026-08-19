@@ -17,6 +17,7 @@ interface FormFieldProps {
   hint?: ReactNode;
   icon: ReactNode;
   endContent?: ReactNode;
+  required?: boolean;
 }
 
 export function FormField({
@@ -31,7 +32,10 @@ export function FormField({
   hint,
   icon,
   endContent,
+  required = false,
 }: FormFieldProps) {
+  const descriptionId = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
+
   return (
     <div>
       <label htmlFor={id} className="mb-1 block text-sm text-blue-100/80">
@@ -48,6 +52,9 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
+          required={required}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={descriptionId}
           className={cn(
             inputBase,
             error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
@@ -56,13 +63,13 @@ export function FormField({
         {endContent}
       </div>
       {error ? (
-        <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
+        <p id={`${id}-error`} className="mt-1 flex items-center gap-1 text-xs text-red-300">
           <CircleAlert className="size-3" />
           {error}
         </p>
-      ) : (
-        hint
-      )}
+      ) : hint ? (
+        <div id={`${id}-hint`}>{hint}</div>
+      ) : null}
     </div>
   );
 }

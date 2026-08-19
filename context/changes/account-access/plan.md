@@ -345,32 +345,32 @@ accounts created during verification.
 
 #### Automated
 
-- [x] 1.1 Astro types and generated modules synchronize successfully: `npx astro sync`
-- [x] 1.2 Type-aware linting passes after the server-contract changes: `npm run lint`
-- [x] 1.3 The Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 1.1 Astro types and generated modules synchronize successfully: `npx astro sync` — 65f2bb3
+- [x] 1.2 Type-aware linting passes after the server-contract changes: `npm run lint` — 65f2bb3
+- [x] 1.3 The Cloudflare-targeted production build succeeds: `npm run build` — 65f2bb3
 
 #### Manual
 
-- [x] 1.4 A malformed direct sign-up or sign-in POST is rejected without a runtime exception or disclosure of provider details
-- [x] 1.5 A local registration sends a confirmation email to Mailpit and displays confirmation instructions
-- [x] 1.6 Following a valid local confirmation link establishes the session and opens `/dashboard`
-- [x] 1.7 Missing, expired, or invalid confirmation codes return to sign-in with one generic authentication error
-- [x] 1.8 Valid sign-in opens `/dashboard`, invalid credentials show the same generic error, and sign-out removes protected access
+- [x] 1.4 A malformed direct sign-up or sign-in POST is rejected without a runtime exception or disclosure of provider details — 65f2bb3
+- [x] 1.5 A local registration sends a confirmation email to Mailpit and displays confirmation instructions — 65f2bb3
+- [x] 1.6 Following a valid local confirmation link establishes the session and opens `/dashboard` — 65f2bb3
+- [x] 1.7 Missing, expired, or invalid confirmation codes return to sign-in with one generic authentication error — 65f2bb3
+- [x] 1.8 Valid sign-in opens `/dashboard`, invalid credentials show the same generic error, and sign-out removes protected access — 65f2bb3
 
 ### Phase 2: Complete the Protected-Access Experience
 
 #### Automated
 
-- [ ] 2.1 Astro types and generated modules synchronize successfully: `npx astro sync`
-- [ ] 2.2 Type-aware linting passes after middleware and form changes: `npm run lint`
-- [ ] 2.3 The Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 2.1 Astro types and generated modules synchronize successfully: `npx astro sync`
+- [x] 2.2 Type-aware linting passes after middleware and form changes: `npm run lint`
+- [x] 2.3 The Cloudflare-targeted production build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Anonymous `/dashboard` and `/dashboard/...` requests redirect to sign-in while `/dashboard-public` is not matched by the dashboard rule
-- [ ] 2.5 Required and invalid fields expose their state and associated descriptions to browser accessibility tooling
-- [ ] 2.6 Server authentication errors are announced as alerts and arbitrary `?error=` text is never rendered
-- [ ] 2.7 The confirmation page always describes the email-confirmation flow in local and production builds
+- [x] 2.4 Anonymous `/dashboard` and `/dashboard/...` requests redirect to sign-in while `/dashboard-public` is not matched by the dashboard rule
+- [x] 2.5 Required and invalid fields expose their state and associated descriptions to browser accessibility tooling
+- [x] 2.6 Server authentication errors are announced as alerts and arbitrary `?error=` text is never rendered
+- [x] 2.7 The confirmation page always describes the email-confirmation flow in local and production builds
 
 ### Phase 3: Verify and Document Account Access
 

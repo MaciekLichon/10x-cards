@@ -53,6 +53,7 @@ export default function SignInForm({ serverError }: Props) {
         placeholder="you@example.com"
         error={errors.email}
         icon={<Mail className="size-4" />}
+        required
       />
 
       <FormField
@@ -67,6 +68,7 @@ export default function SignInForm({ serverError }: Props) {
         placeholder="Your password"
         error={errors.password}
         icon={<Lock className="size-4" />}
+        required
         endContent={
           <PasswordToggle
             visible={showPassword}
