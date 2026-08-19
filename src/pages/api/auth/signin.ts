@@ -1,20 +1,33 @@
 import type { APIRoute } from "astro";
+import { authErrorPath, parseAuthCredentials } from "@/lib/auth";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
-  const form = await context.request.formData();
-  const email = form.get("email") as string;
-  const password = form.get("password") as string;
+  let credentials;
+  try {
+    const form = await context.request.formData();
+    credentials = parseAuthCredentials(form.get("email"), form.get("password"));
+  } catch {
+    return context.redirect(authErrorPath("/auth/signin"));
+  }
+
+  if (!credentials) {
+    return context.redirect(authErrorPath("/auth/signin"));
+  }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
-  }
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    return context.redirect(`/auth/signin?error=${encodeURIComponent(error.message)}`);
+    return context.redirect(authErrorPath("/auth/signin"));
   }
 
-  return context.redirect("/");
+  try {
+    const { error } = await supabase.auth.signInWithPassword(credentials);
+    if (error) {
+      return context.redirect(authErrorPath("/auth/signin"));
+    }
+  } catch {
+    return context.redirect(authErrorPath("/auth/signin"));
+  }
+
+  return context.redirect("/dashboard");
 };

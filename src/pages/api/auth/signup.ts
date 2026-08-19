@@ -1,19 +1,35 @@
 import type { APIRoute } from "astro";
+import { authErrorPath, parseAuthCredentials } from "@/lib/auth";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
-  const form = await context.request.formData();
-  const email = form.get("email") as string;
-  const password = form.get("password") as string;
+  let credentials;
+  try {
+    const form = await context.request.formData();
+    credentials = parseAuthCredentials(form.get("email"), form.get("password"));
+  } catch {
+    return context.redirect(authErrorPath("/auth/signup"));
+  }
+
+  if (!credentials) {
+    return context.redirect(authErrorPath("/auth/signup"));
+  }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/auth/signup?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(authErrorPath("/auth/signup"));
   }
-  const { error } = await supabase.auth.signUp({ email, password });
 
-  if (error) {
-    return context.redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);
+  try {
+    const { error } = await supabase.auth.signUp({
+      ...credentials,
+      options: { emailRedirectTo: new URL("/api/auth/confirm", context.url.origin).toString() },
+    });
+    if (error) {
+      return context.redirect(authErrorPath("/auth/signup"));
+    }
+  } catch {
+    return context.redirect(authErrorPath("/auth/signup"));
   }
 
   return context.redirect("/auth/confirm-email");
