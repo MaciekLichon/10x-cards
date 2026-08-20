@@ -151,10 +151,10 @@ The flashcard RLS integration check is a separate command:
 npm run db:verify-rls
 ```
 
-It targets only a resettable local stack with email confirmation disabled, loads `SUPABASE_URL` and `SUPABASE_KEY` from
-the process, `.env`, or `.dev.vars`, and refuses non-loopback URLs. The check creates two transient users, prints a
-`PASS` line for every positive and negative ownership assertion, and never prints credentials or session tokens. Run
-`npm run db:reset` before the check for a known schema and afterward to remove its transient users.
+It targets only a resettable local stack, loads `SUPABASE_URL` and `SUPABASE_KEY` from the process, `.env`, or
+`.dev.vars`, and refuses non-loopback URLs. The check creates two transient users, prints a `PASS` line for every
+positive and negative ownership assertion, and never prints credentials or session tokens. Run `npm run db:reset`
+before the check for a known schema and afterward to remove its transient users.
 
 The command must use the local anon/publishable key. A service-role or admin client bypasses RLS and is not valid
 ownership evidence. A successful run ends with `Flashcard RLS verification passed`; any violated assertion exits with a
@@ -176,13 +176,57 @@ SUPABASE_KEY=<anon-key>
 
 ### Email confirmation in local development
 
-By default Supabase requires email confirmation before a user can sign in. To skip this during local development:
+Local authentication intentionally requires email confirmation, matching production. The committed Supabase
+configuration uses `http://localhost:4321` as the Site URL and allows the exact callback URL
+`http://localhost:4321/api/auth/confirm`. Keep `SITE_URL=http://localhost:4321` in `.env` and `.dev.vars`, and run Astro
+on its default port so generated confirmation links return to the application.
 
-1. Open the Supabase dashboard for your project
-2. Go to **Authentication → Email → Confirm email**
-3. Toggle it **off**
+To verify a new account locally:
 
-Users can then sign in immediately after sign-up without clicking a confirmation link.
+1. Start or restart the local stack after configuration changes, then reset it to a known state:
+
+```bash
+npx supabase start
+npm run db:reset
+```
+
+2. Run `npx supabase status` and open the reported Mailpit URL.
+3. Start the application with `npm run dev`, register a new email address, and verify that the confirmation-instructions
+   page appears.
+4. Open the captured message in Mailpit and follow its confirmation link. The application callback exchanges the code,
+   stores the session in cookies, and redirects to `/dashboard`.
+5. Refresh `/dashboard`, navigate away and back, then sign out. A fresh `/dashboard` request must redirect to
+   `/auth/signin`.
+
+Malformed requests, invalid credentials, and missing, invalid, or expired confirmation codes must all show the same
+generic authentication error. Provider messages, email addresses, passwords, tokens, and confirmation codes must never
+appear in redirect URLs or rendered errors.
+
+### Account-access acceptance matrix
+
+Run the following checks for account-access changes. Use local Supabase and Mailpit first, then repeat the production
+happy path with an approved dedicated smoke-test account. Never record smoke-test credentials, tokens, confirmation
+codes, or personal email content in the repository.
+
+| Check                                                                     | Local    | Production    |
+| ------------------------------------------------------------------------- | -------- | ------------- |
+| New registration displays confirmation instructions and delivers an email | Required | Required      |
+| A valid confirmation link establishes a session and opens `/dashboard`    | Required | Required      |
+| Missing, invalid, or expired confirmation links show the generic error    | Required | As applicable |
+| Invalid credentials show the same generic error                           | Required | Required      |
+| Valid sign-in opens `/dashboard`                                          | Required | Required      |
+| Session survives navigation, refresh, and a fresh request                 | Required | Required      |
+| Anonymous `/dashboard` access redirects to `/auth/signin`                 | Required | Required      |
+| Sign-out removes access; a new `/dashboard` request redirects to sign-in  | Required | Required      |
+
+Before recording the matrix as complete, run the repository validation and Cloudflare deployment dry run:
+
+```bash
+npx astro sync
+npm run lint
+npm run build
+npm run deploy:check
+```
 
 ### Auth routes
 

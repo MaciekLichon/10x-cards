@@ -361,26 +361,26 @@ accounts created during verification.
 
 #### Automated
 
-- [x] 2.1 Astro types and generated modules synchronize successfully: `npx astro sync`
-- [x] 2.2 Type-aware linting passes after middleware and form changes: `npm run lint`
-- [x] 2.3 The Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 2.1 Astro types and generated modules synchronize successfully: `npx astro sync` — d9ea571
+- [x] 2.2 Type-aware linting passes after middleware and form changes: `npm run lint` — d9ea571
+- [x] 2.3 The Cloudflare-targeted production build succeeds: `npm run build` — d9ea571
 
 #### Manual
 
-- [x] 2.4 Anonymous `/dashboard` and `/dashboard/...` requests redirect to sign-in while `/dashboard-public` is not matched by the dashboard rule
-- [x] 2.5 Required and invalid fields expose their state and associated descriptions to browser accessibility tooling
-- [x] 2.6 Server authentication errors are announced as alerts and arbitrary `?error=` text is never rendered
-- [x] 2.7 The confirmation page always describes the email-confirmation flow in local and production builds
+- [x] 2.4 Anonymous `/dashboard` and `/dashboard/...` requests redirect to sign-in while `/dashboard-public` is not matched by the dashboard rule — d9ea571
+- [x] 2.5 Required and invalid fields expose their state and associated descriptions to browser accessibility tooling — d9ea571
+- [x] 2.6 Server authentication errors are announced as alerts and arbitrary `?error=` text is never rendered — d9ea571
+- [x] 2.7 The confirmation page always describes the email-confirmation flow in local and production builds — d9ea571
 
 ### Phase 3: Verify and Document Account Access
 
 #### Automated
 
-- [ ] 3.1 The complete repository validation and Cloudflare dry run pass: `npm run deploy:check`
-- [ ] 3.2 The change contains no raw provider-error rendering or development-only confirmation branch: `! rg 'error\.message|isAutoConfirmed' src/pages src/components`
+- [x] 3.1 The complete repository validation and Cloudflare dry run pass: `npm run deploy:check`
+- [x] 3.2 The change contains no raw provider-error rendering or development-only confirmation branch: `! rg 'error\.message|isAutoConfirmed' src/pages src/components`
 
 #### Manual
 
-- [ ] 3.3 The complete local confirmation-enabled account-access matrix passes using Supabase and Mailpit
-- [ ] 3.4 The production happy path passes with a dedicated smoke-test account and no secrets or personal data recorded
-- [ ] 3.5 After sign-out in both environments, a new `/dashboard` request redirects to sign-in
+- [x] 3.3 The complete local confirmation-enabled account-access matrix passes using Supabase and Mailpit
+- [x] 3.4 The production happy path passes with a dedicated smoke-test account and no secrets or personal data recorded
+- [x] 3.5 After sign-out in both environments, a new `/dashboard` request redirects to sign-in
