@@ -25,3 +25,8 @@ export function parseAuthCredentials(emailValue: unknown, passwordValue: unknown
 export function authErrorPath(pathname: "/auth/signin" | "/auth/signup") {
   return `${pathname}?error=${AUTH_ERROR_CODE}`;
 }
+
+export function isSameOriginRequest(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  return origin !== null && origin === new URL(request.url).origin;
+}

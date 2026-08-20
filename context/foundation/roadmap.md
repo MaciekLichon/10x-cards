@@ -3,7 +3,7 @@ project: 10xCards
 version: 1
 status: draft
 created: 2026-08-09
-updated: 2026-08-16
+updated: 2026-08-17
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -33,7 +33,7 @@ fiszek tworzonych z AI.
 | ID   | Change ID                        | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                              | Status   |
 | ---- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | -------- |
 | F-01 | user-owned-flashcard-persistence | (foundation) minimalny kontrakt trwałego zapisu fiszek użytkownika i weryfikacja izolacji danych są gotowe | —             | NFR: izolacja danych, Access Control  | done     |
-| S-01 | account-access                   | użytkownik może utworzyć konto, zalogować się i wejść do chronionej części aplikacji                       | —             | FR-001, FR-002                        | ready    |
+| S-01 | account-access                   | użytkownik może utworzyć konto, zalogować się i wejść do chronionej części aplikacji                       | —             | FR-001, FR-002                        | done     |
 | S-02 | ai-flashcard-review              | użytkownik może wkleić tekst, wygenerować propozycje, poprawić je i zapisać wybrane fiszki                 | F-01, S-01    | US-01, FR-003, FR-004, FR-005, FR-006 | blocked  |
 | S-03 | personal-flashcard-collection    | użytkownik może utworzyć fiszkę ręcznie i przeglądać własną kolekcję                                       | F-01, S-01    | FR-007, FR-008                        | proposed |
 | S-04 | maintain-flashcard-collection    | użytkownik może poprawić albo usunąć istniejącą fiszkę ze swojej kolekcji                                  | S-03          | FR-009, FR-010                        | proposed |
@@ -88,7 +88,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Funkcja istnieje w stanie bazowym, ale przed uznaniem jej za zamkniętą trzeba potwierdzić pełne zachowanie wymagane przez PRD.
-- **Status:** ready
+- **Status:** done
 
 ### S-02: Generowanie i weryfikacja fiszek AI
 

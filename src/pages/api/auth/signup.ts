@@ -1,8 +1,12 @@
 import type { APIRoute } from "astro";
-import { authErrorPath, parseAuthCredentials } from "@/lib/auth";
+import { authErrorPath, isSameOriginRequest, parseAuthCredentials } from "@/lib/auth";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
+  if (!isSameOriginRequest(context.request)) {
+    return context.redirect(authErrorPath("/auth/signup"));
+  }
+
   let credentials;
   try {
     const form = await context.request.formData();
