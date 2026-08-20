@@ -376,11 +376,11 @@ accounts created during verification.
 
 #### Automated
 
-- [x] 3.1 The complete repository validation and Cloudflare dry run pass: `npm run deploy:check`
-- [x] 3.2 The change contains no raw provider-error rendering or development-only confirmation branch: `! rg 'error\.message|isAutoConfirmed' src/pages src/components`
+- [x] 3.1 The complete repository validation and Cloudflare dry run pass: `npm run deploy:check` — 040345d
+- [x] 3.2 The change contains no raw provider-error rendering or development-only confirmation branch: `! rg 'error\.message|isAutoConfirmed' src/pages src/components` — 040345d
 
 #### Manual
 
-- [x] 3.3 The complete local confirmation-enabled account-access matrix passes using Supabase and Mailpit
-- [x] 3.4 The production happy path passes with a dedicated smoke-test account and no secrets or personal data recorded
-- [x] 3.5 After sign-out in both environments, a new `/dashboard` request redirects to sign-in
+- [x] 3.3 The complete local confirmation-enabled account-access matrix passes using Supabase and Mailpit — 040345d
+- [x] 3.4 The production happy path passes with a dedicated smoke-test account and no secrets or personal data recorded — 040345d
+- [x] 3.5 After sign-out in both environments, a new `/dashboard` request redirects to sign-in — 040345d
