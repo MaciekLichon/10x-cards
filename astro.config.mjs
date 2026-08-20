@@ -21,6 +21,14 @@ export default defineConfig({
     schema: {
       SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
       SUPABASE_KEY: envField.string({ context: "server", access: "secret" }),
+      OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      OPENROUTER_MODEL: envField.string({ context: "server", access: "secret", optional: true }),
+      DEV_AI_FAILURE_MODE: envField.enum({
+        context: "server",
+        access: "secret",
+        optional: true,
+        values: ["provider_timeout", "provider_rejection", "malformed_output", "save_failure", "save_lost_response"],
+      }),
     },
   },
 });

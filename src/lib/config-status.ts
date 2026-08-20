@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_KEY } from "astro:env/server";
+import { OPENROUTER_API_KEY, OPENROUTER_MODEL, SUPABASE_URL, SUPABASE_KEY } from "astro:env/server";
 
 export interface ConfigStatus {
   name: string;
@@ -19,3 +19,9 @@ export const configStatuses: ConfigStatus[] = [
 ];
 
 export const missingConfigs = configStatuses.filter((s) => !s.configured);
+
+export const aiConfigStatus: ConfigStatus = {
+  name: "OpenRouter",
+  configured: Boolean(OPENROUTER_API_KEY?.trim() && OPENROUTER_MODEL?.trim()),
+  message: "OpenRouter nie jest skonfigurowany — generowanie fiszek AI jest wyłączone.",
+};
