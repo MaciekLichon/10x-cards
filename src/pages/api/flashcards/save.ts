@@ -70,7 +70,8 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
 
   const rows = parsed.data.map(({ id, question, answer }) => ({ id, front: question, back: answer }));
   try {
-    const { error } = await supabase.from("flashcards").insert(rows);
+    const { error, status } = await supabase.from("flashcards").insert(rows);
+    if (error && status === 0) return await reconcileSave(supabase, parsed.data);
     if (error) return jsonError(503, "save_failed", "Flashcards could not be saved. Please try again.");
   } catch {
     return reconcileSave(supabase, parsed.data);
