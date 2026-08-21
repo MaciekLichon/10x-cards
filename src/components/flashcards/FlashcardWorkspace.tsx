@@ -7,11 +7,16 @@ import { ProposalList } from "@/components/flashcards/ProposalList";
 import { SourceTextInput } from "@/components/flashcards/SourceTextInput";
 import { SOURCE_MAX_LENGTH, SOURCE_MIN_LENGTH, type FlashcardProposal } from "@/lib/flashcards";
 
-type WorkflowStatus = "idle" | "generating" | "reviewing" | "saving" | "saved" | "error";
+type WorkflowStatus = "idle" | "generating" | "reviewing" | "saving" | "reconciling" | "saved" | "error";
 
 interface GenerateResponse {
   proposals?: FlashcardProposal[];
   sparse?: boolean;
+  error?: { code?: string };
+}
+
+interface SaveResponse {
+  savedCount?: number;
   error?: { code?: string };
 }
 
@@ -26,6 +31,11 @@ const ERROR_MESSAGES: Record<string, string> = {
   provider_failure: "AI generation is temporarily unavailable. Your source text is preserved.",
   malformed_output: "The AI returned an unreadable response. Your source text is preserved; please try again.",
   no_usable_proposals: "No useful flashcards could be generated from this source. Try more focused material.",
+  invalid_proposals: "Review the selected cards and fix invalid or duplicate questions before saving.",
+  database_unavailable: "Flashcard storage is not configured for this environment.",
+  save_failed: "No cards were saved. Your reviewed set is preserved; please try the whole batch again.",
+  save_ambiguous: "The save result could not be confirmed. Do not retry this set until it is reconciled.",
+  save_conflict: "Some cards may already exist or differ. Do not retry this set; start a new generation.",
 };
 
 interface FlashcardWorkspaceProps {
@@ -39,7 +49,9 @@ export default function FlashcardWorkspace({ aiConfigured }: FlashcardWorkspaceP
   const [error, setError] = useState<string>();
   const [sourceError, setSourceError] = useState<string>();
   const [sparse, setSparse] = useState(false);
-  const busy = status === "generating" || status === "saving";
+  const [savedCount, setSavedCount] = useState(0);
+  const [confirmedFailureRetry, setConfirmedFailureRetry] = useState(false);
+  const busy = status === "generating" || status === "saving" || status === "reconciling";
   const acceptedValid = useMemo(
     () => proposals.filter((proposal) => proposal.accepted && isProposalValid(proposal)),
     [proposals],
@@ -73,6 +85,8 @@ export default function FlashcardWorkspace({ aiConfigured }: FlashcardWorkspaceP
       }
       setProposals(body.proposals.map((proposal) => ({ ...proposal, id: crypto.randomUUID(), accepted: true })));
       setSparse(Boolean(body.sparse));
+      setSavedCount(0);
+      setConfirmedFailureRetry(false);
       setStatus("reviewing");
     } catch (caught) {
       const code = caught instanceof Error ? caught.message : "provider_failure";
@@ -91,6 +105,64 @@ export default function FlashcardWorkspace({ aiConfigured }: FlashcardWorkspaceP
     setProposals((current) =>
       current.map((proposal) => (proposal.id === id ? { ...proposal, accepted: !proposal.accepted } : proposal)),
     );
+  }
+
+  async function save() {
+    if (busy || acceptedValid.length === 0) return;
+    setStatus("saving");
+    setError(undefined);
+    const selected = acceptedValid.map(({ id, question, answer }) => ({ id, question, answer }));
+    try {
+      let response: Response;
+      let body: SaveResponse;
+      try {
+        response = await fetch("/api/flashcards/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(confirmedFailureRetry ? { "X-Dev-AI-Retry": "confirmed-failure" } : {}),
+          },
+          body: JSON.stringify({ proposals: selected }),
+        });
+        body = await response.json();
+      } catch {
+        response = new Response(null, { status: 503 });
+        body = { error: { code: "save_ambiguous" } };
+      }
+      if (!response.ok && body.error?.code !== "save_ambiguous") {
+        throw new Error(body.error?.code ?? "save_failed");
+      }
+      if (!response.ok) {
+        setStatus("reconciling");
+        response = await fetch("/api/flashcards/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ proposals: selected, reconcile: true }),
+        });
+        body = await response.json();
+      }
+      if (!response.ok || typeof body.savedCount !== "number") {
+        throw new Error(body.error?.code ?? "save_ambiguous");
+      }
+      setSavedCount(body.savedCount);
+      setConfirmedFailureRetry(false);
+      setSourceText("");
+      setStatus("saved");
+    } catch (caught) {
+      const code = caught instanceof Error ? caught.message : "save_ambiguous";
+      setConfirmedFailureRetry(code === "save_failed");
+      setError(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.save_ambiguous);
+      setStatus("error");
+    }
+  }
+
+  function startOver() {
+    setProposals([]);
+    setSparse(false);
+    setSavedCount(0);
+    setConfirmedFailureRetry(false);
+    setError(undefined);
+    setStatus("idle");
   }
 
   return (
@@ -134,7 +206,8 @@ export default function FlashcardWorkspace({ aiConfigured }: FlashcardWorkspaceP
         {status === "reviewing" &&
           `${proposals.length} proposal${proposals.length === 1 ? " is" : "s are"} ready to review.`}
         {status === "saving" && "Saving the selected cards…"}
-        {status === "saved" && "Selected cards were saved."}
+        {status === "reconciling" && "The save response was interrupted. Confirming the saved cards…"}
+        {status === "saved" && `${savedCount} card${savedCount === 1 ? " was" : "s were"} saved.`}
       </div>
       <ServerError message={error} />
 
@@ -148,20 +221,41 @@ export default function FlashcardWorkspace({ aiConfigured }: FlashcardWorkspaceP
             onToggle={toggleProposal}
           />
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
-            <p className="text-sm text-blue-100/60">
-              {acceptedValid.length === 0
-                ? "No accepted valid cards remain. This is a valid no-save outcome."
-                : `${acceptedValid.length} valid card${acceptedValid.length === 1 ? "" : "s"} selected.`}
-            </p>
-            <button
-              type="button"
-              disabled
-              title="Saving is added in Phase 3"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Save className="size-4" />
-              Save selected
-            </button>
+            {status === "saved" ? (
+              <p className="rounded-lg border border-emerald-400/30 bg-emerald-900/30 px-4 py-3 text-sm font-medium text-emerald-100">
+                Success: {savedCount} card{savedCount === 1 ? " was" : "s were"} saved.
+              </p>
+            ) : (
+              <p className="text-sm text-blue-100/60">
+                {acceptedValid.length === 0
+                  ? "No accepted valid cards remain. This is a valid no-save outcome."
+                  : `${acceptedValid.length} valid card${acceptedValid.length === 1 ? "" : "s"} selected.`}
+              </p>
+            )}
+            {status === "saved" ? (
+              <button
+                type="button"
+                onClick={startOver}
+                className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-purple-500 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
+              >
+                <Sparkles className="size-4" />
+                Generate another set
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void save()}
+                disabled={busy || acceptedValid.length === 0}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {status === "saving" || status === "reconciling" ? (
+                  <LoaderCircle className="size-4 animate-spin" />
+                ) : (
+                  <Save className="size-4" />
+                )}
+                {status === "saving" ? "Saving…" : status === "reconciling" ? "Confirming save…" : "Save selected"}
+              </button>
+            )}
           </div>
         </div>
       )}

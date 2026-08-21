@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import process, { loadEnvFile } from "node:process";
+import { setTimeout as delay } from "node:timers/promises";
 import { URL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 
@@ -21,6 +22,14 @@ const configuredUrl = new URL(supabaseUrl);
 if (!["127.0.0.1", "localhost", "::1"].includes(configuredUrl.hostname)) {
   throw new Error("Refusing to run against a non-local Supabase URL. Use a resettable local stack.");
 }
+
+const localConfig = readFileSync("supabase/config.toml", "utf8");
+const inbucketSection = localConfig.match(/\[inbucket\]([\s\S]*?)(?:\n\[|$)/)?.[1];
+const inbucketPort = inbucketSection?.match(/^port\s*=\s*(\d+)\s*$/m)?.[1];
+if (!inbucketPort) {
+  throw new Error("Local Mailpit port is missing from supabase/config.toml.");
+}
+const mailpitUrl = new URL(`http://${configuredUrl.hostname}:${inbucketPort}`);
 
 const clientOptions = {
   auth: {
@@ -52,10 +61,38 @@ async function createAuthenticatedUser(client, label) {
   const { data, error } = await client.auth.signUp({ email, password });
 
   assert(!error, `${label} user signs up through the ordinary client`);
-  assert(Boolean(data.session), `${label} user receives a local authenticated session`);
-  assert(Boolean(data.user?.id), `${label} user has an authenticated identity`);
+  assert(Boolean(data.user?.id), `${label} user has a pending local identity`);
 
-  return data.user.id;
+  let token;
+  for (let attempt = 0; attempt < 20 && !token; attempt += 1) {
+    const searchUrl = new URL("/api/v1/search", mailpitUrl);
+    searchUrl.searchParams.set("query", `to:${email}`);
+    searchUrl.searchParams.set("limit", "1");
+    const searchResponse = await globalThis.fetch(searchUrl);
+    if (searchResponse.ok) {
+      const search = await searchResponse.json();
+      const messageId = search.messages?.[0]?.ID;
+      if (messageId) {
+        const messageResponse = await globalThis.fetch(new URL(`/api/v1/message/${messageId}`, mailpitUrl));
+        if (messageResponse.ok) {
+          const message = await messageResponse.json();
+          token = message.Text?.match(/enter the code:\s*(\d+)/i)?.[1];
+        }
+      }
+    }
+    if (!token) await delay(250);
+  }
+  assert(Boolean(token), `${label} user's confirmation reaches local Mailpit`);
+
+  const { data: verified, error: verificationError } = await client.auth.verifyOtp({
+    email,
+    token,
+    type: "signup",
+  });
+  assert(!verificationError && Boolean(verified.session), `${label} user confirms through the ordinary client`);
+  assert(verified.user?.id === data.user.id, `${label} user receives the expected authenticated identity`);
+
+  return verified.user.id;
 }
 
 async function main() {

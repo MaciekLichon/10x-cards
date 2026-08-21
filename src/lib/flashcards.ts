@@ -9,6 +9,10 @@ export interface FlashcardProposal {
   answer: string;
 }
 
+export interface PersistedFlashcardProposal extends FlashcardProposal {
+  id: string;
+}
+
 export type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; reason: "invalid_input" | "unusable_output" };
@@ -28,6 +32,51 @@ function normalizedQuestionKey(question: string): string {
     .toLocaleLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim();
+}
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function parsePersistedProposals(value: unknown): ParseResult<PersistedFlashcardProposal[]> {
+  if (!Array.isArray(value) || value.length === 0 || value.length > PROPOSAL_MAX_COUNT) {
+    return { success: false, reason: "invalid_input" };
+  }
+
+  const proposals: PersistedFlashcardProposal[] = [];
+  const ids = new Set<string>();
+  const questions = new Set<string>();
+  for (const candidateValue of value as unknown[]) {
+    if (typeof candidateValue !== "object" || candidateValue === null) {
+      return { success: false, reason: "invalid_input" };
+    }
+    const candidate = candidateValue as Record<string, unknown>;
+    if (
+      typeof candidate.id !== "string" ||
+      typeof candidate.question !== "string" ||
+      typeof candidate.answer !== "string"
+    ) {
+      return { success: false, reason: "invalid_input" };
+    }
+    const id = candidate.id.toLowerCase();
+    const question = candidate.question.trim();
+    const answer = candidate.answer.trim();
+    const questionKey = normalizedQuestionKey(question);
+    if (
+      !UUID_PATTERN.test(id) ||
+      ids.has(id) ||
+      !questionKey ||
+      questions.has(questionKey) ||
+      question.length > QUESTION_MAX_LENGTH ||
+      !answer ||
+      answer.length > ANSWER_MAX_LENGTH
+    ) {
+      return { success: false, reason: "invalid_input" };
+    }
+    ids.add(id);
+    questions.add(questionKey);
+    proposals.push({ id, question, answer });
+  }
+
+  return { success: true, data: proposals };
 }
 
 export function parseProposals(value: unknown): ParseResult<FlashcardProposal[]> {

@@ -47,6 +47,32 @@ cp .env.example .dev.vars
 npm run dev
 ```
 
+## AI flashcard configuration
+
+AI generation uses OpenRouter from server code only. Copy `.env.example` to both ignored local files, `.env` and
+`.dev.vars`, then set `OPENROUTER_API_KEY` and `OPENROUTER_MODEL`. The model is configuration-driven and must support the
+strict JSON-schema response format required by the application. Never copy keys, source text, or generated card content
+into logs, screenshots, commits, or review artifacts.
+
+For Cloudflare, add `OPENROUTER_API_KEY` as an encrypted secret (for example with
+`npx wrangler secret put OPENROUTER_API_KEY`) and configure `OPENROUTER_MODEL` as a server-side Workers variable. Do not
+commit either value. `DEV_AI_FAILURE_MODE` is local-development-only and must not be added to Wrangler configuration.
+
+To smoke-test locally, sign in, open `/dashboard`, paste 1,000–10,000 characters of non-sensitive single-language text,
+generate proposals, edit or reject them, and save the accepted set. The server accepts 1–15 cards, limits questions to
+200 characters and answers to 500, and persists only selected cards. Use `provider_timeout`, `provider_rejection`,
+`malformed_output`, `save_failure`, or `save_lost_response` as the temporary `DEV_AI_FAILURE_MODE` value to exercise safe
+failure and reconciliation paths without recording private content.
+
+Run the final validation gates after the local smoke test:
+
+```bash
+npm run db:verify-rls
+npx astro sync
+npm run lint
+npm run build
+```
+
 ## Available Scripts
 
 - `npm run dev` - Start development server (Cloudflare workerd runtime)
