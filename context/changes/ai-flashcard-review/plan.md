@@ -404,33 +404,33 @@ rollback is involved.
 
 #### Automated
 
-- [x] 1.1 Astro generates current environment and route types successfully: `npx astro sync`
-- [x] 1.2 Type-aware lint accepts provider, validation, and endpoint code: `npm run lint`
-- [x] 1.3 Cloudflare-targeted build succeeds with server-only OpenRouter imports: `npm run build`
+- [x] 1.1 Astro generates current environment and route types successfully: `npx astro sync` — b08c0d4
+- [x] 1.2 Type-aware lint accepts provider, validation, and endpoint code: `npm run lint` — b08c0d4
+- [x] 1.3 Cloudflare-targeted build succeeds with server-only OpenRouter imports: `npm run build` — b08c0d4
 
 #### Manual
 
-- [x] 1.4 Valid same-language source text returns 1–15 normalized proposals within the 200/500 field limits
-- [x] 1.5 Source boundaries at 999, 1,000, 10,000, and 10,001 characters behave as specified
-- [x] 1.6 Auth, origin, JSON, structured-output configuration, timeout, provider, malformed-output, and zero-result
+- [x] 1.4 Valid same-language source text returns 1–15 normalized proposals within the 200/500 field limits — b08c0d4
+- [x] 1.5 Source boundaries at 999, 1,000, 10,000, and 10,001 characters behave as specified — b08c0d4
+- [x] 1.6 Auth, origin, JSON, structured-output configuration, timeout, provider, malformed-output, and zero-result — b08c0d4
       failures are safe
-- [x] 1.7 Sparse 1–4 card output succeeds without padding
+- [x] 1.7 Sparse 1–4 card output succeeds without padding — b08c0d4
 
 ### Phase 2: Generation and Review Interface
 
 #### Automated
 
-- [ ] 2.1 Astro synchronizes the dashboard island and component contracts: `npx astro sync`
-- [ ] 2.2 Type-aware ESLint and accessibility rules pass: `npm run lint`
-- [ ] 2.3 Production build emits the dashboard workflow for Cloudflare Workers: `npm run build`
+- [x] 2.1 Astro synchronizes the dashboard island and component contracts: `npx astro sync`
+- [x] 2.2 Type-aware ESLint and accessibility rules pass: `npm run lint`
+- [x] 2.3 Production build emits the dashboard workflow for Cloudflare Workers: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Signed-in desktop generation shows continuous progress and same-language proposals
-- [ ] 2.5 Source guidance, character count, focus order, keyboard controls, errors, and announcements are usable
-- [ ] 2.6 Proposals support edit, accept, reject, restore, and reject-all behavior
-- [ ] 2.7 Starting over protects unsaved edits while recoverable failure preserves source text
-- [ ] 2.8 Edited question and answer boundaries are enforced
+- [x] 2.4 Signed-in desktop generation shows continuous progress and same-language proposals
+- [x] 2.5 Source guidance, character count, focus order, keyboard controls, errors, and announcements are usable
+- [x] 2.6 Proposals support edit, accept, reject, restore, and reject-all behavior
+- [x] 2.7 Starting over protects unsaved edits while recoverable failure preserves source text
+- [x] 2.8 Edited question and answer boundaries are enforced
 
 ### Phase 3: Atomic Persistence and End-to-End Verification
 
