@@ -1,9 +1,9 @@
 ---
 change_id: ai-flashcard-review
 title: Generate and review AI flashcards
-status: implementing
+status: implemented
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-22
 archived_at: null
 ---
 

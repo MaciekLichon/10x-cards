@@ -436,18 +436,18 @@ rollback is involved.
 
 #### Automated
 
-- [x] 3.1 Existing flashcard ownership verification still passes: `npm run db:verify-rls`
-- [x] 3.2 Astro type synchronization succeeds: `npx astro sync`
-- [x] 3.3 Type-aware lint succeeds: `npm run lint`
-- [x] 3.4 Cloudflare-targeted production build succeeds: `npm run build`
-- [x] 3.5 Working-tree inspection contains no OpenRouter key, source text fixture, or generated user content
+- [x] 3.1 Existing flashcard ownership verification still passes: `npm run db:verify-rls` — 3071368
+- [x] 3.2 Astro type synchronization succeeds: `npx astro sync` — 3071368
+- [x] 3.3 Type-aware lint succeeds: `npm run lint` — 3071368
+- [x] 3.4 Cloudflare-targeted production build succeeds: `npm run build` — 3071368
+- [x] 3.5 Working-tree inspection contains no OpenRouter key, source text fixture, or generated user content — 3071368
 
 #### Manual
 
-- [x] 3.6 Saving 1 and 15 cards creates exactly those owner-visible rows with correct front/back mapping
-- [x] 3.7 Rejecting all proposals performs no insert and leaves the workflow usable
-- [x] 3.8 Invalid input or confirmed database failure saves zero rows; retry is idempotent, and lost success responses
+- [x] 3.6 Saving 1 and 15 cards creates exactly those owner-visible rows with correct front/back mapping — 3071368
+- [x] 3.7 Rejecting all proposals performs no insert and leaves the workflow usable — 3071368
+- [x] 3.8 Invalid input or confirmed database failure saves zero rows; retry is idempotent, and lost success responses — 3071368
       reconcile by owner-scoped UUID lookup without duplicates
-- [x] 3.9 Cross-user and anonymous access remain denied
-- [x] 3.10 Browser refresh and logs retain no source or generated content
-- [x] 3.11 Complete login, generation, review, and atomic-save flow works in a modern desktop browser
+- [x] 3.9 Cross-user and anonymous access remain denied — 3071368
+- [x] 3.10 Browser refresh and logs retain no source or generated content — 3071368
+- [x] 3.11 Complete login, generation, review, and atomic-save flow works in a modern desktop browser — 3071368
