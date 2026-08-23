@@ -29,6 +29,12 @@ export default defineConfig({
         optional: true,
         values: ["provider_timeout", "provider_rejection", "malformed_output", "save_failure", "save_lost_response"],
       }),
+      DEV_COLLECTION_FAILURE_MODE: envField.enum({
+        context: "server",
+        access: "secret",
+        optional: true,
+        values: ["read_failure", "save_failure", "save_lost_response", "reconcile_failure"],
+      }),
     },
   },
 });

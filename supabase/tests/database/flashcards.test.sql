@@ -1,6 +1,6 @@
 begin;
 
-select plan(38);
+select plan(39);
 
 select has_table('public', 'flashcards', 'flashcards table exists');
 select columns_are(
@@ -46,6 +46,17 @@ select is(
   'deleting a user cascades to their flashcards'
 );
 select has_index('public', 'flashcards', 'flashcards_user_id_idx', 'owner index exists');
+select is(
+  (
+    select indexdef
+    from pg_indexes
+    where schemaname = 'public'
+      and tablename = 'flashcards'
+      and indexname = 'flashcards_user_created_id_idx'
+  ),
+  'CREATE INDEX flashcards_user_created_id_idx ON public.flashcards USING btree (user_id, created_at DESC, id DESC)',
+  'collection index matches owner-scoped newest-first pagination'
+);
 select trigger_is(
   'public',
   'flashcards',
