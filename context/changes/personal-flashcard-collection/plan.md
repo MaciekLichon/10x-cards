@@ -411,38 +411,38 @@ queries would otherwise lose their intended access path. Existing flashcards rem
 
 #### Automated
 
-- [x] 1.1 Local migrations reset cleanly: `npm run db:reset`
-- [x] 1.2 Database lint reports no errors: `npm run db:lint`
-- [x] 1.3 Database tests verify the collection index and preserve the flashcard schema/RLS contract: `npm run db:test`
-- [x] 1.4 Generated database types remain current after the index-only migration: `npm run db:types:check`
-- [x] 1.5 Existing executable owner-isolation verification passes: `npm run db:verify-rls`
-- [x] 1.6 Astro route and environment types synchronize: `npx astro sync`
-- [x] 1.7 Type-aware lint accepts the collection contracts and endpoint: `npm run lint`
-- [x] 1.8 Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 1.1 Local migrations reset cleanly: `npm run db:reset` — 95ce4c5
+- [x] 1.2 Database lint reports no errors: `npm run db:lint` — 95ce4c5
+- [x] 1.3 Database tests verify the collection index and preserve the flashcard schema/RLS contract: `npm run db:test` — 95ce4c5
+- [x] 1.4 Generated database types remain current after the index-only migration: `npm run db:types:check` — 95ce4c5
+- [x] 1.5 Existing executable owner-isolation verification passes: `npm run db:verify-rls` — 95ce4c5
+- [x] 1.6 Astro route and environment types synchronize: `npx astro sync` — 95ce4c5
+- [x] 1.7 Type-aware lint accepts the collection contracts and endpoint: `npm run lint` — 95ce4c5
+- [x] 1.8 Cloudflare-targeted production build succeeds: `npm run build` — 95ce4c5
 
 #### Manual
 
-- [x] 1.9 Anonymous collection reads and writes are rejected, and cross-user rows never appear through the endpoint
-- [x] 1.10 Empty, whitespace-only, 200/201-character front and 500/501-character back boundaries behave as specified
-- [x] 1.11 Equal timestamps paginate deterministically by UUID without gaps or duplicates
-- [x] 1.12 Confirmed save failure, lost response, reconciliation, retry, and content-conflict paths do not create duplicate rows
+- [x] 1.9 Anonymous collection reads and writes are rejected, and cross-user rows never appear through the endpoint — 95ce4c5
+- [x] 1.10 Empty, whitespace-only, 200/201-character front and 500/501-character back boundaries behave as specified — 95ce4c5
+- [x] 1.11 Equal timestamps paginate deterministically by UUID without gaps or duplicates — 95ce4c5
+- [x] 1.12 Confirmed save failure, lost response, reconciliation, retry, and content-conflict paths do not create duplicate rows — 95ce4c5
 
 ### Phase 2: Collection Page and Creation Workflow
 
 #### Automated
 
-- [ ] 2.1 Astro synchronizes the nested page and React component contracts: `npx astro sync`
-- [ ] 2.2 Type-aware ESLint and accessibility rules pass: `npm run lint`
-- [ ] 2.3 Cloudflare-targeted production build emits both protected dashboard routes: `npm run build`
+- [x] 2.1 Astro synchronizes the nested page and React component contracts: `npx astro sync`
+- [x] 2.2 Type-aware ESLint and accessibility rules pass: `npm run lint`
+- [x] 2.3 Cloudflare-targeted production build emits both protected dashboard routes: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Signed-in users can navigate between AI workspace and Collection without regressing generation state on either page
-- [ ] 2.5 Collection presents correct loading, empty, list, inline read-error Retry, and pagination-error recovery states
-- [ ] 2.6 Add flashcard expands an accessible form; invalid boundaries are explained and duplicate submissions are disabled
-- [ ] 2.7 Successful and reconciled creation reload the authoritative first page, clear and collapse the form, and show the card
-- [ ] 2.8 Cards display front, back, and creation date newest-first; Load More reaches older cards without gaps or duplicates
-- [ ] 2.9 Keyboard navigation, focus recovery, visible focus, status announcements, and desktop responsive layout are usable
+- [x] 2.4 Signed-in users can navigate between AI workspace and Collection without regressing generation state on either page
+- [x] 2.5 Collection presents correct loading, empty, list, inline read-error Retry, and pagination-error recovery states
+- [x] 2.6 Add flashcard expands an accessible form; invalid boundaries are explained and duplicate submissions are disabled
+- [x] 2.7 Successful and reconciled creation reload the authoritative first page, clear and collapse the form, and show the card
+- [x] 2.8 Cards display front, back, and creation date newest-first; Load More reaches older cards without gaps or duplicates
+- [x] 2.9 Keyboard navigation, focus recovery, visible focus, status announcements, and desktop responsive layout are usable
 
 ### Phase 3: End-to-End Verification and Evidence
 
