@@ -1,7 +1,7 @@
 ---
 change_id: personal-flashcard-collection
 title: Add manual flashcard creation and collection browsing
-status: implementing
+status: implemented
 created: 2026-08-23
 updated: 2026-08-26
 archived_at: null

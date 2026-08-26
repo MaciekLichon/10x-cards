@@ -448,18 +448,18 @@ queries would otherwise lose their intended access path. Existing flashcards rem
 
 #### Automated
 
-- [x] 3.1 Local database reset, lint, pgTAP, type drift, and executable RLS verification all pass: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check && npm run db:verify-rls`
-- [x] 3.2 Astro synchronization succeeds: `npx astro sync`
-- [x] 3.3 Type-aware lint succeeds: `npm run lint`
-- [x] 3.4 Cloudflare-targeted production build succeeds: `npm run build`
-- [x] 3.5 Working-tree inspection contains no secrets, retained user card content, `user_id` collection payloads, or S-04 controls
+- [x] 3.1 Local database reset, lint, pgTAP, type drift, and executable RLS verification all pass: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check && npm run db:verify-rls` — 3568538
+- [x] 3.2 Astro synchronization succeeds: `npx astro sync` — 3568538
+- [x] 3.3 Type-aware lint succeeds: `npm run lint` — 3568538
+- [x] 3.4 Cloudflare-targeted production build succeeds: `npm run build` — 3568538
+- [x] 3.5 Working-tree inspection contains no secrets, retained user card content, `user_id` collection payloads, or S-04 controls — 3568538
 
 #### Manual
 
-- [x] 3.6 Anonymous users are redirected from the collection page and cannot call collection APIs successfully
-- [x] 3.7 Two authenticated users can create and browse only their own cards, including across cursor pages
-- [x] 3.8 Manual creation, refresh-after-save, ambiguous-response reconciliation, and safe retry work without duplicate rows
-- [x] 3.9 The complete collection remains reachable in stable newest-first order through repeated Load More actions
-- [x] 3.10 Collection UI states and accessibility behavior work in a current desktop browser
-- [x] 3.11 Existing login, AI generation, review, and save behavior remains functional
-- [x] 3.12 A non-sensitive scenario matrix records the environment, date, and pass/fail evidence for every manual criterion
+- [x] 3.6 Anonymous users are redirected from the collection page and cannot call collection APIs successfully — 3568538
+- [x] 3.7 Two authenticated users can create and browse only their own cards, including across cursor pages — 3568538
+- [x] 3.8 Manual creation, refresh-after-save, ambiguous-response reconciliation, and safe retry work without duplicate rows — 3568538
+- [x] 3.9 The complete collection remains reachable in stable newest-first order through repeated Load More actions — 3568538
+- [x] 3.10 Collection UI states and accessibility behavior work in a current desktop browser — 3568538
+- [x] 3.11 Existing login, AI generation, review, and save behavior remains functional — 3568538
+- [x] 3.12 A non-sensitive scenario matrix records the environment, date, and pass/fail evidence for every manual criterion — 3568538
