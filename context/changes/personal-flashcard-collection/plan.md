@@ -431,35 +431,35 @@ queries would otherwise lose their intended access path. Existing flashcards rem
 
 #### Automated
 
-- [x] 2.1 Astro synchronizes the nested page and React component contracts: `npx astro sync`
-- [x] 2.2 Type-aware ESLint and accessibility rules pass: `npm run lint`
-- [x] 2.3 Cloudflare-targeted production build emits both protected dashboard routes: `npm run build`
+- [x] 2.1 Astro synchronizes the nested page and React component contracts: `npx astro sync` — 4b82760
+- [x] 2.2 Type-aware ESLint and accessibility rules pass: `npm run lint` — 4b82760
+- [x] 2.3 Cloudflare-targeted production build emits both protected dashboard routes: `npm run build` — 4b82760
 
 #### Manual
 
-- [x] 2.4 Signed-in users can navigate between AI workspace and Collection without regressing generation state on either page
-- [x] 2.5 Collection presents correct loading, empty, list, inline read-error Retry, and pagination-error recovery states
-- [x] 2.6 Add flashcard expands an accessible form; invalid boundaries are explained and duplicate submissions are disabled
-- [x] 2.7 Successful and reconciled creation reload the authoritative first page, clear and collapse the form, and show the card
-- [x] 2.8 Cards display front, back, and creation date newest-first; Load More reaches older cards without gaps or duplicates
-- [x] 2.9 Keyboard navigation, focus recovery, visible focus, status announcements, and desktop responsive layout are usable
+- [x] 2.4 Signed-in users can navigate between AI workspace and Collection without regressing generation state on either page — 4b82760
+- [x] 2.5 Collection presents correct loading, empty, list, inline read-error Retry, and pagination-error recovery states — 4b82760
+- [x] 2.6 Add flashcard expands an accessible form; invalid boundaries are explained and duplicate submissions are disabled — 4b82760
+- [x] 2.7 Successful and reconciled creation reload the authoritative first page, clear and collapse the form, and show the card — 4b82760
+- [x] 2.8 Cards display front, back, and creation date newest-first; Load More reaches older cards without gaps or duplicates — 4b82760
+- [x] 2.9 Keyboard navigation, focus recovery, visible focus, status announcements, and desktop responsive layout are usable — 4b82760
 
 ### Phase 3: End-to-End Verification and Evidence
 
 #### Automated
 
-- [ ] 3.1 Local database reset, lint, pgTAP, type drift, and executable RLS verification all pass: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check && npm run db:verify-rls`
-- [ ] 3.2 Astro synchronization succeeds: `npx astro sync`
-- [ ] 3.3 Type-aware lint succeeds: `npm run lint`
-- [ ] 3.4 Cloudflare-targeted production build succeeds: `npm run build`
-- [ ] 3.5 Working-tree inspection contains no secrets, retained user card content, `user_id` collection payloads, or S-04 controls
+- [x] 3.1 Local database reset, lint, pgTAP, type drift, and executable RLS verification all pass: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check && npm run db:verify-rls`
+- [x] 3.2 Astro synchronization succeeds: `npx astro sync`
+- [x] 3.3 Type-aware lint succeeds: `npm run lint`
+- [x] 3.4 Cloudflare-targeted production build succeeds: `npm run build`
+- [x] 3.5 Working-tree inspection contains no secrets, retained user card content, `user_id` collection payloads, or S-04 controls
 
 #### Manual
 
-- [ ] 3.6 Anonymous users are redirected from the collection page and cannot call collection APIs successfully
-- [ ] 3.7 Two authenticated users can create and browse only their own cards, including across cursor pages
-- [ ] 3.8 Manual creation, refresh-after-save, ambiguous-response reconciliation, and safe retry work without duplicate rows
-- [ ] 3.9 The complete collection remains reachable in stable newest-first order through repeated Load More actions
-- [ ] 3.10 Collection UI states and accessibility behavior work in a current desktop browser
-- [ ] 3.11 Existing login, AI generation, review, and save behavior remains functional
-- [ ] 3.12 A non-sensitive scenario matrix records the environment, date, and pass/fail evidence for every manual criterion
+- [x] 3.6 Anonymous users are redirected from the collection page and cannot call collection APIs successfully
+- [x] 3.7 Two authenticated users can create and browse only their own cards, including across cursor pages
+- [x] 3.8 Manual creation, refresh-after-save, ambiguous-response reconciliation, and safe retry work without duplicate rows
+- [x] 3.9 The complete collection remains reachable in stable newest-first order through repeated Load More actions
+- [x] 3.10 Collection UI states and accessibility behavior work in a current desktop browser
+- [x] 3.11 Existing login, AI generation, review, and save behavior remains functional
+- [x] 3.12 A non-sensitive scenario matrix records the environment, date, and pass/fail evidence for every manual criterion
