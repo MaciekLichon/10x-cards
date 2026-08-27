@@ -72,7 +72,7 @@ export default function FlashcardCollection() {
   }, [loadFirstPage]);
 
   async function loadMore() {
-    if (!nextCursor || loadingMore) return;
+    if (!nextCursor || loadingMore || saving || initialLoading) return;
     setLoadingMore(true);
     setPaginationError(undefined);
     try {
@@ -102,7 +102,7 @@ export default function FlashcardCollection() {
   }
 
   async function save(input: ManualFlashcardInput): Promise<boolean> {
-    if (saving) return false;
+    if (saving || loadingMore || initialLoading) return false;
     setSaving(true);
     setSaveError(undefined);
     setNotice(undefined);
@@ -131,7 +131,12 @@ export default function FlashcardCollection() {
 
   return (
     <div className="space-y-6">
-      <ManualFlashcardForm busy={saving} open={formOpen} onOpenChange={setFormOpen} onSubmit={save} />
+      <ManualFlashcardForm
+        busy={saving || loadingMore || initialLoading}
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        onSubmit={save}
+      />
 
       <div aria-live="polite" aria-atomic="true">
         {notice && (
@@ -191,7 +196,7 @@ export default function FlashcardCollection() {
           <button
             type="button"
             onClick={() => void loadMore()}
-            disabled={loadingMore}
+            disabled={loadingMore || saving || initialLoading}
             className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-5 py-2.5 text-sm text-white hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loadingMore && <LoaderCircle className="size-4 animate-spin" />}

@@ -100,7 +100,11 @@ export function parseCollectionCursor(value: unknown): ParseResult<CollectionCur
     if (!UUID_PATTERN.test(id) || !Number.isFinite(createdAt.getTime())) {
       return { success: false, reason: "invalid_input" };
     }
-    return { success: true, data: { createdAt: createdAt.toISOString(), id } };
+    const canonicalCreatedAt = createdAt.toISOString();
+    if (candidate.createdAt !== canonicalCreatedAt) {
+      return { success: false, reason: "invalid_input" };
+    }
+    return { success: true, data: { createdAt: canonicalCreatedAt, id } };
   } catch {
     return { success: false, reason: "invalid_input" };
   }
