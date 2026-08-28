@@ -3,6 +3,7 @@ import { DEV_COLLECTION_FAILURE_MODE } from "astro:env/server";
 import { isSameOriginRequest } from "@/lib/auth";
 import {
   COLLECTION_PAGE_SIZE,
+  canonicalizeDatabaseTimestamp,
   encodeCollectionCursor,
   parseCollectionCursor,
   parseManualFlashcard,
@@ -29,7 +30,13 @@ function developmentFailureMode(): string | undefined {
 }
 
 function publicFlashcard(row: FlashcardRow): CollectionFlashcard {
-  return { id: row.id, front: row.front, back: row.back, createdAt: row.created_at, updatedAt: row.updated_at };
+  return {
+    id: row.id,
+    front: row.front,
+    back: row.back,
+    createdAt: canonicalizeDatabaseTimestamp(row.created_at),
+    updatedAt: canonicalizeDatabaseTimestamp(row.updated_at),
+  };
 }
 
 async function reconcileSave(supabase: SupabaseClient, submitted: ManualFlashcardInput): Promise<Response> {

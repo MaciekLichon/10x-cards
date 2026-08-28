@@ -20,6 +20,15 @@ export interface ManualFlashcardInput {
   back: string;
 }
 
+export interface UpdateFlashcardInput extends ManualFlashcardInput {
+  updatedAt: string;
+}
+
+export interface DeleteFlashcardInput {
+  id: string;
+  updatedAt: string;
+}
+
 export interface CollectionFlashcard {
   id: string;
   front: string;
@@ -55,6 +64,54 @@ function normalizedQuestionKey(question: string): string {
 }
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const CANONICAL_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$/;
+
+export function parseFlashcardId(value: unknown): ParseResult<string> {
+  if (typeof value !== "string" || !UUID_PATTERN.test(value)) {
+    return { success: false, reason: "invalid_input" };
+  }
+  return { success: true, data: value.toLowerCase() };
+}
+
+function parseCanonicalTimestamp(value: unknown): ParseResult<string> {
+  if (typeof value !== "string") return { success: false, reason: "invalid_input" };
+  const timestamp = new Date(value);
+  if (!CANONICAL_TIMESTAMP_PATTERN.test(value) || !Number.isFinite(timestamp.getTime())) {
+    return { success: false, reason: "invalid_input" };
+  }
+  return { success: true, data: value };
+}
+
+export function canonicalizeDatabaseTimestamp(value: string): string {
+  return value.replace(/(?:\+00(?::00)?)$/, "Z");
+}
+
+function hasExactlyKeys(candidate: Record<string, unknown>, keys: string[]): boolean {
+  const candidateKeys = Object.keys(candidate);
+  return candidateKeys.length === keys.length && keys.every((key) => Object.hasOwn(candidate, key));
+}
+
+export function parseUpdateFlashcard(value: unknown): ParseResult<UpdateFlashcardInput> {
+  if (typeof value !== "object" || value === null) return { success: false, reason: "invalid_input" };
+  const candidate = value as Record<string, unknown>;
+  if (!hasExactlyKeys(candidate, ["id", "front", "back", "updatedAt"])) {
+    return { success: false, reason: "invalid_input" };
+  }
+  const card = parseManualFlashcard(candidate);
+  const updatedAt = parseCanonicalTimestamp(candidate.updatedAt);
+  if (!card.success || !updatedAt.success) return { success: false, reason: "invalid_input" };
+  return { success: true, data: { ...card.data, updatedAt: updatedAt.data } };
+}
+
+export function parseDeleteFlashcard(value: unknown): ParseResult<DeleteFlashcardInput> {
+  if (typeof value !== "object" || value === null) return { success: false, reason: "invalid_input" };
+  const candidate = value as Record<string, unknown>;
+  if (!hasExactlyKeys(candidate, ["id", "updatedAt"])) return { success: false, reason: "invalid_input" };
+  const id = parseFlashcardId(candidate.id);
+  const updatedAt = parseCanonicalTimestamp(candidate.updatedAt);
+  if (!id.success || !updatedAt.success) return { success: false, reason: "invalid_input" };
+  return { success: true, data: { id: id.data, updatedAt: updatedAt.data } };
+}
 
 export function parseManualFlashcard(value: unknown): ParseResult<ManualFlashcardInput> {
   if (typeof value !== "object" || value === null) return { success: false, reason: "invalid_input" };
