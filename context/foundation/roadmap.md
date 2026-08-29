@@ -3,7 +3,7 @@ project: 10xCards
 version: 1
 status: draft
 created: 2026-08-09
-updated: 2026-08-22
+updated: 2026-08-30
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -30,14 +30,14 @@ fiszek tworzonych z AI.
 
 ## At a glance
 
-| ID   | Change ID                        | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                              | Status   |
-| ---- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | -------- |
-| F-01 | user-owned-flashcard-persistence | (foundation) minimalny kontrakt trwałego zapisu fiszek użytkownika i weryfikacja izolacji danych są gotowe | —             | NFR: izolacja danych, Access Control  | done     |
-| S-01 | account-access                   | użytkownik może utworzyć konto, zalogować się i wejść do chronionej części aplikacji                       | —             | FR-001, FR-002                        | done     |
-| S-02 | ai-flashcard-review              | użytkownik może wkleić tekst, wygenerować propozycje, poprawić je i zapisać wybrane fiszki                 | F-01, S-01    | US-01, FR-003, FR-004, FR-005, FR-006 | done     |
-| S-03 | personal-flashcard-collection    | użytkownik może utworzyć fiszkę ręcznie i przeglądać własną kolekcję                                       | F-01, S-01    | FR-007, FR-008                        | proposed |
-| S-04 | maintain-flashcard-collection    | użytkownik może poprawić albo usunąć istniejącą fiszkę ze swojej kolekcji                                  | S-03          | FR-009, FR-010                        | proposed |
-| S-05 | spaced-repetition-session        | użytkownik może przejść sesję należnych powtórek, ocenić fiszki i zachować postęp                          | F-01, S-02    | US-01, FR-011, FR-012                 | blocked  |
+| ID   | Change ID                        | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                              | Status      |
+| ---- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | ----------- |
+| F-01 | user-owned-flashcard-persistence | (foundation) minimalny kontrakt trwałego zapisu fiszek użytkownika i weryfikacja izolacji danych są gotowe | —             | NFR: izolacja danych, Access Control  | done        |
+| S-01 | account-access                   | użytkownik może utworzyć konto, zalogować się i wejść do chronionej części aplikacji                       | —             | FR-001, FR-002                        | done        |
+| S-02 | ai-flashcard-review              | użytkownik może wkleić tekst, wygenerować propozycje, poprawić je i zapisać wybrane fiszki                 | F-01, S-01    | US-01, FR-003, FR-004, FR-005, FR-006 | done        |
+| S-03 | personal-flashcard-collection    | użytkownik może utworzyć fiszkę ręcznie i przeglądać własną kolekcję                                       | F-01, S-01    | FR-007, FR-008                        | done        |
+| S-04 | maintain-flashcard-collection    | użytkownik może poprawić albo usunąć istniejącą fiszkę ze swojej kolekcji                                  | S-03          | FR-009, FR-010                        | done        |
+| S-05 | spaced-repetition-session        | użytkownik może przejść sesję należnych powtórek, ocenić fiszki i zachować postęp                          | F-01, S-02    | US-01, FR-011, FR-012                 | blocked     |
 
 ## Streams
 
@@ -112,7 +112,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Przepływ potwierdza trwałość i izolację danych bez zależności od AI, ale nie powinien wyprzedzać prac odblokowujących S-02.
-- **Status:** proposed
+- **Status:** done
 
 ### S-04: Utrzymanie kolekcji fiszek
 
@@ -124,7 +124,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Edycja i usuwanie korzystają z kolekcji dostarczonej w S-03; wcześniejsza realizacja powielałaby ten sam przepływ bez wartości dla użytkownika.
-- **Status:** proposed
+- **Status:** done
 
 ### S-05: Sesja zaplanowanych powtórek
 
@@ -147,8 +147,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-01       | user-owned-flashcard-persistence | Ustanów minimalny bezpieczny zapis fiszek użytkownika | done                  | Implementacja i przegląd zostały ukończone.              |
 | S-01       | account-access                   | Zweryfikuj dostęp do chronionej aplikacji             | yes                   | Zachowanie jest już obecne w stanie bazowym.             |
 | S-02       | ai-flashcard-review              | Dostarcz generowanie i weryfikację fiszek AI          | done                  | Implementacja, weryfikacja i przegląd zostały ukończone. |
-| S-03       | personal-flashcard-collection    | Dodaj ręczne tworzenie i przeglądanie kolekcji        | no                    | Wymaga F-01 i S-01.                                      |
-| S-04       | maintain-flashcard-collection    | Dodaj edycję i usuwanie fiszek                        | no                    | Wymaga S-03.                                             |
+| S-03       | personal-flashcard-collection    | Dodaj ręczne tworzenie i przeglądanie kolekcji        | done                  | Implementacja, weryfikacja i przegląd zostały ukończone. |
+| S-04       | maintain-flashcard-collection    | Dodaj edycję i usuwanie fiszek                        | done                  | Implementacja, weryfikacja i przegląd zostały ukończone. |
 | S-05       | spaced-repetition-session        | Dostarcz sesję zaplanowanych powtórek                 | no                    | Najpierw ustal skalę ocen i algorytm powtórek.           |
 
 ## Open Roadmap Questions
@@ -171,3 +171,5 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **F-01 — Minimalny kontrakt danych fiszek** (`user-owned-flashcard-persistence`) — ukończono implementację, weryfikację izolacji danych i przegląd implementacji 2026-08-16.
 - **S-02 — Generowanie i weryfikacja fiszek AI** (`ai-flashcard-review`) — ukończono implementację, weryfikację i przegląd implementacji 2026-08-22.
+- **S-03 — Ręczne tworzenie i przeglądanie kolekcji** (`personal-flashcard-collection`) — ukończono implementację, weryfikację i przegląd implementacji 2026-08-27.
+- **S-04 — Utrzymanie kolekcji fiszek** (`maintain-flashcard-collection`) — ukończono implementację, weryfikację i przegląd implementacji 2026-08-30.
