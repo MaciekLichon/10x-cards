@@ -426,17 +426,17 @@ while leaving collection reads, creation, existing rows, and RLS policies intact
 
 #### Automated
 
-- [x] 3.1 Complete database and RLS gate passes
-- [x] 3.2 Astro synchronization succeeds
-- [x] 3.3 Type-aware lint succeeds
-- [x] 3.4 Cloudflare-targeted production build succeeds
-- [x] 3.5 Final diff contains no secrets, ownership leaks, service-role use, S-05 coupling, or schema drift
+- [x] 3.1 Complete database and RLS gate passes — 9a19900
+- [x] 3.2 Astro synchronization succeeds — 9a19900
+- [x] 3.3 Type-aware lint succeeds — 9a19900
+- [x] 3.4 Cloudflare-targeted production build succeeds — 9a19900
+- [x] 3.5 Final diff contains no secrets, ownership leaks, service-role use, S-05 coupling, or schema drift — 9a19900
 
 #### Manual
 
-- [x] 3.6 Two sessions demonstrate safe conflicts and owner isolation
-- [x] 3.7 Lost mutation responses reconcile without repeating writes
-- [x] 3.8 Edit identity preservation and final-card deletion behave correctly
-- [x] 3.9 Desktop keyboard, focus, dialog, validation, status, and error behavior pass
-- [x] 3.10 Existing authentication, S-02, and S-03 flows remain functional
-- [x] 3.11 Non-sensitive verification evidence is complete
+- [x] 3.6 Two sessions demonstrate safe conflicts and owner isolation — 9a19900
+- [x] 3.7 Lost mutation responses reconcile without repeating writes — 9a19900
+- [x] 3.8 Edit identity preservation and final-card deletion behave correctly — 9a19900
+- [x] 3.9 Desktop keyboard, focus, dialog, validation, status, and error behavior pass — 9a19900
+- [x] 3.10 Existing authentication, S-02, and S-03 flows remain functional — 9a19900
+- [x] 3.11 Non-sensitive verification evidence is complete — 9a19900
