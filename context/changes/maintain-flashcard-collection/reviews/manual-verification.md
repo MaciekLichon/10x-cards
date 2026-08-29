@@ -2,7 +2,7 @@
 
 - **Date:** 2026-08-29
 - **Environment:** Local Astro development server with resettable local Supabase; current desktop browser
-- **Result:** Pending manual verification
+- **Result:** Pass — 18 passed, 0 failed
 
 Record only pass/fail outcomes and concise, non-sensitive observations. Do not include credentials, flashcard content, raw
 request/response payloads, user identifiers, or sensitive screenshots.

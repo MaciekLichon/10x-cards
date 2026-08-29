@@ -155,6 +155,15 @@ verification without affecting production.
 **Contract**: Extend the existing development-only collection failure enum with update failure/lost-response and delete
 failure/lost-response cases. Production must ignore all injected modes.
 
+#### 4. Collection DTO timestamp canonicalization
+
+**File**: `src/pages/api/flashcards/collection.ts`
+
+**Intent**: Keep collection DTO timestamps compatible with the canonical `updatedAt` mutation precondition.
+
+**Contract**: Canonicalize database UTC offsets to the `Z` form when projecting `updatedAt`, without changing timestamp
+precision or collection behavior.
+
 ### Success Criteria:
 
 #### Automated Verification:

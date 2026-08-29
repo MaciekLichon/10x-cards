@@ -76,7 +76,11 @@ export function parseFlashcardId(value: unknown): ParseResult<string> {
 function parseCanonicalTimestamp(value: unknown): ParseResult<string> {
   if (typeof value !== "string") return { success: false, reason: "invalid_input" };
   const timestamp = new Date(value);
-  if (!CANONICAL_TIMESTAMP_PATTERN.test(value) || !Number.isFinite(timestamp.getTime())) {
+  if (
+    !CANONICAL_TIMESTAMP_PATTERN.test(value) ||
+    !Number.isFinite(timestamp.getTime()) ||
+    timestamp.toISOString().slice(0, 19) !== value.slice(0, 19)
+  ) {
     return { success: false, reason: "invalid_input" };
   }
   return { success: true, data: value };

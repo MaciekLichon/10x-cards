@@ -174,12 +174,23 @@ export default function FlashcardCollection() {
     method: "PATCH" | "DELETE",
     input: UpdateFlashcardInput | { id: string; updatedAt: string },
   ): Promise<MutationResponse> {
-    const response = await fetch(`/api/flashcards/${input.id}`, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
-    const body: MutationResponse = await response.json();
+    let response: Response;
+    try {
+      response = await fetch(`/api/flashcards/${input.id}`, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+    } catch {
+      throw new Error("mutation_ambiguous");
+    }
+
+    let body: MutationResponse;
+    try {
+      body = await response.json();
+    } catch {
+      throw new Error("mutation_ambiguous");
+    }
     if (!response.ok) throw new Error(body.error?.code ?? (method === "PATCH" ? "update_failed" : "delete_failed"));
     return body;
   }
