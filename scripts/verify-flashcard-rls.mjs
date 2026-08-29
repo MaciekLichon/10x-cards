@@ -154,17 +154,76 @@ async function main() {
     .from("flashcards")
     .update({ front: "RLS owner question updated" })
     .eq("id", insertedCard.id)
-    .select("id, front")
+    .eq("updated_at", insertedCard.updated_at)
+    .select("id, front, updated_at")
     .single();
   assert(!ownerUpdateError && updatedCard?.front === "RLS owner question updated", "owner updates their card");
+  assert(updatedCard.updated_at !== insertedCard.updated_at, "owner update advances the card version");
+
+  const { data: staleUpdated, error: staleUpdateError } = await ownerClient
+    .from("flashcards")
+    .update({ front: "Stale update must not land" })
+    .eq("id", insertedCard.id)
+    .eq("updated_at", insertedCard.updated_at)
+    .select("id");
+  assert(!staleUpdateError && staleUpdated.length === 0, "stale owner update affects no rows");
+
+  const { data: staleDeleted, error: staleDeleteError } = await ownerClient
+    .from("flashcards")
+    .delete()
+    .eq("id", insertedCard.id)
+    .eq("updated_at", insertedCard.updated_at)
+    .select("id");
+  assert(!staleDeleteError && staleDeleted.length === 0, "stale owner delete affects no rows");
+
+  const { data: currentCard, error: currentCardError } = await ownerClient
+    .from("flashcards")
+    .select("id, front, updated_at")
+    .eq("id", insertedCard.id)
+    .single();
+  assert(
+    !currentCardError &&
+      currentCard?.front === "RLS owner question updated" &&
+      currentCard.updated_at === updatedCard.updated_at,
+    "stale mutations leave the current owner version intact",
+  );
+
+  const { data: otherConditionallyUpdated, error: otherConditionalUpdateError } = await otherClient
+    .from("flashcards")
+    .update({ front: "Cross-account conditional update" })
+    .eq("id", insertedCard.id)
+    .eq("updated_at", updatedCard.updated_at)
+    .select("id");
+  assert(
+    !otherConditionalUpdateError && otherConditionallyUpdated.length === 0,
+    "second user cannot conditionally update the owner's current version",
+  );
+
+  const { data: otherConditionallyDeleted, error: otherConditionalDeleteError } = await otherClient
+    .from("flashcards")
+    .delete()
+    .eq("id", insertedCard.id)
+    .eq("updated_at", updatedCard.updated_at)
+    .select("id");
+  assert(
+    !otherConditionalDeleteError && otherConditionallyDeleted.length === 0,
+    "second user cannot conditionally delete the owner's current version",
+  );
 
   const { data: deletedCard, error: ownerDeleteError } = await ownerClient
     .from("flashcards")
     .delete()
     .eq("id", insertedCard.id)
+    .eq("updated_at", updatedCard.updated_at)
     .select("id")
     .single();
   assert(!ownerDeleteError && deletedCard?.id === insertedCard.id, "owner deletes their card");
+
+  const { data: removedCard, error: removedCardError } = await ownerClient
+    .from("flashcards")
+    .select("id")
+    .eq("id", insertedCard.id);
+  assert(!removedCardError && removedCard.length === 0, "owner deletion removes the selected target");
 
   console.log("Flashcard RLS verification passed. Run `npm run db:reset` to remove transient test users.");
 }

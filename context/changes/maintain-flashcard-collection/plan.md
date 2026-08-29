@@ -408,35 +408,35 @@ while leaving collection reads, creation, existing rows, and RLS policies intact
 
 #### Automated
 
-- [x] 2.1 Astro and React contracts synchronize
-- [x] 2.2 Type-aware ESLint and accessibility rules pass
-- [x] 2.3 Cloudflare-targeted production build succeeds
+- [x] 2.1 Astro and React contracts synchronize — dad0ad4
+- [x] 2.2 Type-aware ESLint and accessibility rules pass — dad0ad4
+- [x] 2.3 Cloudflare-targeted production build succeeds — dad0ad4
 
 #### Manual
 
-- [x] 2.4 Inline editing enforces all front and back validation boundaries
-- [x] 2.5 Single-editor switching protects dirty drafts
-- [x] 2.6 Stale edits preserve drafts and do not overwrite newer content
-- [x] 2.7 Delete confirmation satisfies keyboard, focus, cancellation, and permanent-action behavior
-- [x] 2.8 Only the active card is blocked during a mutation
-- [x] 2.9 Mutation outcomes, empty state, focus recovery, and live announcements behave correctly
-- [x] 2.10 Later-page maintenance preserves loaded collection integrity
+- [x] 2.4 Inline editing enforces all front and back validation boundaries — dad0ad4
+- [x] 2.5 Single-editor switching protects dirty drafts — dad0ad4
+- [x] 2.6 Stale edits preserve drafts and do not overwrite newer content — dad0ad4
+- [x] 2.7 Delete confirmation satisfies keyboard, focus, cancellation, and permanent-action behavior — dad0ad4
+- [x] 2.8 Only the active card is blocked during a mutation — dad0ad4
+- [x] 2.9 Mutation outcomes, empty state, focus recovery, and live announcements behave correctly — dad0ad4
+- [x] 2.10 Later-page maintenance preserves loaded collection integrity — dad0ad4
 
 ### Phase 3: Resilience and End-to-End Evidence
 
 #### Automated
 
-- [ ] 3.1 Complete database and RLS gate passes
-- [ ] 3.2 Astro synchronization succeeds
-- [ ] 3.3 Type-aware lint succeeds
-- [ ] 3.4 Cloudflare-targeted production build succeeds
-- [ ] 3.5 Final diff contains no secrets, ownership leaks, service-role use, S-05 coupling, or schema drift
+- [x] 3.1 Complete database and RLS gate passes
+- [x] 3.2 Astro synchronization succeeds
+- [x] 3.3 Type-aware lint succeeds
+- [x] 3.4 Cloudflare-targeted production build succeeds
+- [x] 3.5 Final diff contains no secrets, ownership leaks, service-role use, S-05 coupling, or schema drift
 
 #### Manual
 
-- [ ] 3.6 Two sessions demonstrate safe conflicts and owner isolation
-- [ ] 3.7 Lost mutation responses reconcile without repeating writes
-- [ ] 3.8 Edit identity preservation and final-card deletion behave correctly
-- [ ] 3.9 Desktop keyboard, focus, dialog, validation, status, and error behavior pass
-- [ ] 3.10 Existing authentication, S-02, and S-03 flows remain functional
-- [ ] 3.11 Non-sensitive verification evidence is complete
+- [x] 3.6 Two sessions demonstrate safe conflicts and owner isolation
+- [x] 3.7 Lost mutation responses reconcile without repeating writes
+- [x] 3.8 Edit identity preservation and final-card deletion behave correctly
+- [x] 3.9 Desktop keyboard, focus, dialog, validation, status, and error behavior pass
+- [x] 3.10 Existing authentication, S-02, and S-03 flows remain functional
+- [x] 3.11 Non-sensitive verification evidence is complete

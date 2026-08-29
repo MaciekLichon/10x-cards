@@ -71,6 +71,12 @@ export function FlashcardCollectionCard({
     onCancelEdit();
   }
 
+  function beginEdit() {
+    setFront(flashcard.front);
+    setBack(flashcard.back);
+    onEdit();
+  }
+
   return (
     <article
       data-card-id={flashcard.id}
@@ -92,6 +98,7 @@ export function FlashcardCollectionCard({
             aria-invalid={frontInvalid}
             aria-describedby={frontInvalid ? errorId : undefined}
             disabled={mutationBusy}
+            maxLength={QUESTION_MAX_LENGTH + 1}
             rows={4}
             className="mt-2 resize-y rounded-lg border border-white/20 bg-blue-950/60 px-3 py-2 text-white focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none disabled:opacity-60"
           />
@@ -110,6 +117,7 @@ export function FlashcardCollectionCard({
             aria-invalid={backInvalid}
             aria-describedby={backInvalid ? errorId : undefined}
             disabled={mutationBusy}
+            maxLength={ANSWER_MAX_LENGTH + 1}
             rows={6}
             className="mt-2 resize-y rounded-lg border border-white/20 bg-blue-950/60 px-3 py-2 text-blue-50 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none disabled:opacity-60"
           />
@@ -165,9 +173,7 @@ export function FlashcardCollectionCard({
             <button
               type="button"
               data-flashcard-action
-              onClick={() => {
-                onEdit();
-              }}
+              onClick={beginEdit}
               disabled={mutationControlsDisabled}
               className="text-sm font-medium text-purple-200 hover:text-purple-100 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
             >

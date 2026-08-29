@@ -1,6 +1,6 @@
 begin;
 
-select plan(39);
+select plan(43);
 
 select has_table('public', 'flashcards', 'flashcards table exists');
 select columns_are(
@@ -179,6 +179,63 @@ select is(
   (select user_id from public.flashcards limit 1),
   '00000000-0000-0000-0000-000000000001'::uuid,
   'updating a flashcard preserves user_id'
+);
+
+create temporary table mutation_results (
+  operation text primary key,
+  affected_rows bigint not null
+);
+
+with stale_update as (
+  update public.flashcards
+  set front = 'Stale update'
+  where user_id = '00000000-0000-0000-0000-000000000001'
+    and updated_at = '2026-01-01 00:00:00+00'::timestamptz
+  returning id
+)
+insert into mutation_results
+select 'stale_update', count(*) from stale_update;
+
+select is(
+  (select affected_rows from mutation_results where operation = 'stale_update'),
+  0::bigint,
+  'stale conditional update affects no rows'
+);
+
+with stale_delete as (
+  delete from public.flashcards
+  where user_id = '00000000-0000-0000-0000-000000000001'
+    and updated_at = '2026-01-01 00:00:00+00'::timestamptz
+  returning id
+)
+insert into mutation_results
+select 'stale_delete', count(*) from stale_delete;
+
+select is(
+  (select affected_rows from mutation_results where operation = 'stale_delete'),
+  0::bigint,
+  'stale conditional delete affects no rows'
+);
+
+select is(
+  (select front from public.flashcards where user_id = '00000000-0000-0000-0000-000000000001'),
+  'Updated question',
+  'stale conditional mutations preserve the current card'
+);
+
+with owner_delete as (
+  delete from public.flashcards
+  where user_id = '00000000-0000-0000-0000-000000000001'
+    and front = 'Updated question'
+  returning id
+)
+insert into mutation_results
+select 'owner_delete', count(*) from owner_delete;
+
+select is(
+  (select affected_rows from mutation_results where operation = 'owner_delete'),
+  1::bigint,
+  'owner conditional deletion removes the target'
 );
 
 delete from auth.users where id = '00000000-0000-0000-0000-000000000001';
