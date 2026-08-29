@@ -391,36 +391,36 @@ while leaving collection reads, creation, existing rows, and RLS policies intact
 
 #### Automated
 
-- [x] 1.1 Astro synchronizes the dynamic API route and environment contract
-- [x] 1.2 Type-aware lint accepts mutation parsers and handlers
-- [x] 1.3 Cloudflare-targeted production build succeeds
-- [x] 1.4 Local database reset and lint preserve the existing schema
-- [x] 1.5 Database catalog tests and generated-type drift checks remain green
-- [x] 1.6 Ordinary-client RLS verification proves owner update/delete and cross-owner denial
+- [x] 1.1 Astro synchronizes the dynamic API route and environment contract — 3f43130
+- [x] 1.2 Type-aware lint accepts mutation parsers and handlers — 3f43130
+- [x] 1.3 Cloudflare-targeted production build succeeds — 3f43130
+- [x] 1.4 Local database reset and lint preserve the existing schema — 3f43130
+- [x] 1.5 Database catalog tests and generated-type drift checks remain green — 3f43130
+- [x] 1.6 Ordinary-client RLS verification proves owner update/delete and cross-owner denial — 3f43130
 
 #### Manual
 
-- [x] 1.7 Mutation requests enforce the specified non-leaking error contract
-- [x] 1.8 Successful update and delete preserve all required data invariants
-- [x] 1.9 Definitive and ambiguous mutation outcomes are reproducible without repeated writes
+- [x] 1.7 Mutation requests enforce the specified non-leaking error contract — 3f43130
+- [x] 1.8 Successful update and delete preserve all required data invariants — 3f43130
+- [x] 1.9 Definitive and ambiguous mutation outcomes are reproducible without repeated writes — 3f43130
 
 ### Phase 2: Inline Collection Maintenance
 
 #### Automated
 
-- [ ] 2.1 Astro and React contracts synchronize
-- [ ] 2.2 Type-aware ESLint and accessibility rules pass
-- [ ] 2.3 Cloudflare-targeted production build succeeds
+- [x] 2.1 Astro and React contracts synchronize
+- [x] 2.2 Type-aware ESLint and accessibility rules pass
+- [x] 2.3 Cloudflare-targeted production build succeeds
 
 #### Manual
 
-- [ ] 2.4 Inline editing enforces all front and back validation boundaries
-- [ ] 2.5 Single-editor switching protects dirty drafts
-- [ ] 2.6 Stale edits preserve drafts and do not overwrite newer content
-- [ ] 2.7 Delete confirmation satisfies keyboard, focus, cancellation, and permanent-action behavior
-- [ ] 2.8 Only the active card is blocked during a mutation
-- [ ] 2.9 Mutation outcomes, empty state, focus recovery, and live announcements behave correctly
-- [ ] 2.10 Later-page maintenance preserves loaded collection integrity
+- [x] 2.4 Inline editing enforces all front and back validation boundaries
+- [x] 2.5 Single-editor switching protects dirty drafts
+- [x] 2.6 Stale edits preserve drafts and do not overwrite newer content
+- [x] 2.7 Delete confirmation satisfies keyboard, focus, cancellation, and permanent-action behavior
+- [x] 2.8 Only the active card is blocked during a mutation
+- [x] 2.9 Mutation outcomes, empty state, focus recovery, and live announcements behave correctly
+- [x] 2.10 Later-page maintenance preserves loaded collection integrity
 
 ### Phase 3: Resilience and End-to-End Evidence
 
