@@ -3,7 +3,7 @@ project: 10xCards
 version: 1
 status: draft
 created: 2026-08-09
-updated: 2026-08-30
+updated: 2026-09-01
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -37,7 +37,7 @@ fiszek tworzonych z AI.
 | S-02 | ai-flashcard-review              | użytkownik może wkleić tekst, wygenerować propozycje, poprawić je i zapisać wybrane fiszki                 | F-01, S-01    | US-01, FR-003, FR-004, FR-005, FR-006 | done        |
 | S-03 | personal-flashcard-collection    | użytkownik może utworzyć fiszkę ręcznie i przeglądać własną kolekcję                                       | F-01, S-01    | FR-007, FR-008                        | done        |
 | S-04 | maintain-flashcard-collection    | użytkownik może poprawić albo usunąć istniejącą fiszkę ze swojej kolekcji                                  | S-03          | FR-009, FR-010                        | done        |
-| S-05 | spaced-repetition-session        | użytkownik może przejść sesję należnych powtórek, ocenić fiszki i zachować postęp                          | F-01, S-02    | US-01, FR-011, FR-012                 | blocked     |
+| S-05 | spaced-repetition-session        | użytkownik może przejść sesję należnych powtórek, ocenić fiszki i zachować postęp                          | F-01, S-02    | US-01, FR-011, FR-012                 | planning    |
 
 ## Streams
 
@@ -138,7 +138,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Jak użytkownik ocenia znajomość fiszki podczas sesji? — Owner: user. Block: yes.
   - Jaki gotowy algorytm spaced repetition wyznacza kolejny termin i jak interpretuje ocenę? — Owner: user. Block: yes.
 - **Risk:** Utrata postępu lub błędny dobór kart narusza kryteria bezpieczeństwa produktu, dlatego oba kontrakty muszą być rozstrzygnięte przed planowaniem.
-- **Status:** blocked
+- **Status:** planning
 
 ## Backlog Handoff
 
