@@ -28,28 +28,229 @@ export type Database = {
   };
   public: {
     Tables: {
+      flashcard_review_logs: {
+        Row: {
+          config_version: string;
+          created_at: string;
+          expected_schedule_version: number;
+          flashcard_id: string;
+          id: string;
+          post_state: Json;
+          pre_state: Json;
+          rating: number;
+          request_id: string;
+          result: Json;
+          reviewed_at: string;
+          scheduler_version: string;
+          session_id: string;
+          user_id: string;
+        };
+        Insert: {
+          config_version: string;
+          created_at?: string;
+          expected_schedule_version: number;
+          flashcard_id: string;
+          id?: string;
+          post_state: Json;
+          pre_state: Json;
+          rating: number;
+          request_id: string;
+          result: Json;
+          reviewed_at: string;
+          scheduler_version: string;
+          session_id: string;
+          user_id: string;
+        };
+        Update: {
+          config_version?: string;
+          created_at?: string;
+          expected_schedule_version?: number;
+          flashcard_id?: string;
+          id?: string;
+          post_state?: Json;
+          pre_state?: Json;
+          rating?: number;
+          request_id?: string;
+          result?: Json;
+          reviewed_at?: string;
+          scheduler_version?: string;
+          session_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "flashcard_review_logs_card_owner_fk";
+            columns: ["flashcard_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "flashcards";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "flashcard_review_logs_session_owner_fk";
+            columns: ["session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "flashcard_review_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      flashcard_review_session_cards: {
+        Row: {
+          completed_at: string | null;
+          flashcard_id: string;
+          next_due: string | null;
+          ordinal: number;
+          review_count: number;
+          session_id: string;
+          state: string;
+          user_id: string;
+        };
+        Insert: {
+          completed_at?: string | null;
+          flashcard_id: string;
+          next_due?: string | null;
+          ordinal: number;
+          review_count?: number;
+          session_id: string;
+          state?: string;
+          user_id: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          flashcard_id?: string;
+          next_due?: string | null;
+          ordinal?: number;
+          review_count?: number;
+          session_id?: string;
+          state?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "flashcard_review_session_cards_card_owner_fk";
+            columns: ["flashcard_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "flashcards";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "flashcard_review_session_cards_session_owner_fk";
+            columns: ["session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "flashcard_review_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      flashcard_review_sessions: {
+        Row: {
+          again_count: number;
+          completed_at: string | null;
+          created_at: string;
+          cutoff: string;
+          deferred_count: number;
+          easy_count: number;
+          expires_at: string;
+          good_count: number;
+          hard_count: number;
+          id: string;
+          reviewed_count: number;
+          status: string;
+          user_id: string;
+        };
+        Insert: {
+          again_count?: number;
+          completed_at?: string | null;
+          created_at?: string;
+          cutoff: string;
+          deferred_count?: number;
+          easy_count?: number;
+          expires_at?: string;
+          good_count?: number;
+          hard_count?: number;
+          id?: string;
+          reviewed_count?: number;
+          status?: string;
+          user_id: string;
+        };
+        Update: {
+          again_count?: number;
+          completed_at?: string | null;
+          created_at?: string;
+          cutoff?: string;
+          deferred_count?: number;
+          easy_count?: number;
+          expires_at?: string;
+          good_count?: number;
+          hard_count?: number;
+          id?: string;
+          reviewed_count?: number;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       flashcards: {
         Row: {
           back: string;
+          config_version: string;
           created_at: string;
+          difficulty: number;
+          due: string;
+          elapsed_days: number;
           front: string;
           id: string;
+          lapses: number;
+          last_review: string | null;
+          learning_steps: number;
+          reps: number;
+          schedule_version: number;
+          scheduled_days: number;
+          scheduler_version: string;
+          stability: number;
+          state: number;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           back: string;
+          config_version?: string;
           created_at?: string;
+          difficulty?: number;
+          due?: string;
+          elapsed_days?: number;
           front: string;
           id?: string;
+          lapses?: number;
+          last_review?: string | null;
+          learning_steps?: number;
+          reps?: number;
+          schedule_version?: number;
+          scheduled_days?: number;
+          scheduler_version?: string;
+          stability?: number;
+          state?: number;
           updated_at?: string;
           user_id?: string;
         };
         Update: {
           back?: string;
+          config_version?: string;
           created_at?: string;
+          difficulty?: number;
+          due?: string;
+          elapsed_days?: number;
           front?: string;
           id?: string;
+          lapses?: number;
+          last_review?: string | null;
+          learning_steps?: number;
+          reps?: number;
+          schedule_version?: number;
+          scheduled_days?: number;
+          scheduler_version?: string;
+          stability?: number;
+          state?: number;
           updated_at?: string;
           user_id?: string;
         };
@@ -60,7 +261,24 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      apply_flashcard_review: {
+        Args: {
+          p_expected_schedule_version: number;
+          p_flashcard_id: string;
+          p_post_state: Json;
+          p_rating: number;
+          p_request_id: string;
+          p_result: Json;
+          p_reviewed_at: string;
+          p_session_id: string;
+          p_user_id: string;
+        };
+        Returns: Json;
+      };
+      get_or_create_review_session: {
+        Args: { p_cutoff: string; p_user_id: string };
+        Returns: Json;
+      };
     };
     Enums: {
       [_ in never]: never;

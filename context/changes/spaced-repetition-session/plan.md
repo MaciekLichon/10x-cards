@@ -495,15 +495,15 @@ when their parent card is deleted.
 
 #### Automated
 
-- [ ] 1.1 Exact scheduler smoke contract passes: `npm run verify:fsrs`
-- [ ] 1.2 Cloudflare-targeted scheduler bundle succeeds: `npx astro sync && npm run build`
-- [ ] 1.3 Local schema, lint, and pgTAP contracts pass: `npm run db:reset && npm run db:lint && npm run db:test`
-- [ ] 1.4 Generated database types match the local schema: `npm run db:types && npm run db:types:check`
+- [x] 1.1 Exact scheduler smoke contract passes: `npm run verify:fsrs`
+- [x] 1.2 Cloudflare-targeted scheduler bundle succeeds: `npx astro sync && npm run build`
+- [x] 1.3 Local schema, lint, and pgTAP contracts pass: `npm run db:reset && npm run db:lint && npm run db:test`
+- [x] 1.4 Generated database types match the local schema: `npm run db:types && npm run db:types:check`
 
 #### Manual
 
-- [ ] 1.5 Migration and tests contain no service-role-based proof of user isolation
-- [ ] 1.6 Scheduler/config versions and the 24-hour session policy match the accepted planning decisions
+- [x] 1.5 Migration and tests contain no service-role-based proof of user isolation
+- [x] 1.6 Scheduler/config versions and the 24-hour session policy match the accepted planning decisions
 
 ### Phase 2: Authoritative Scheduling APIs
 

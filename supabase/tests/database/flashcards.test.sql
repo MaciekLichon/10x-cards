@@ -1,13 +1,17 @@
 begin;
 
-select plan(43);
+select plan(45);
 
 select has_table('public', 'flashcards', 'flashcards table exists');
 select columns_are(
   'public',
   'flashcards',
-  array['id', 'user_id', 'front', 'back', 'created_at', 'updated_at'],
-  'flashcards has only the approved columns'
+  array[
+    'id', 'user_id', 'front', 'back', 'created_at', 'updated_at', 'due', 'stability', 'difficulty', 'elapsed_days',
+    'scheduled_days', 'learning_steps', 'reps', 'lapses', 'state', 'last_review', 'schedule_version',
+    'scheduler_version', 'config_version'
+  ],
+  'flashcards has the approved content and scheduling columns'
 );
 select col_type_is('public', 'flashcards', 'id', 'uuid', 'id is uuid');
 select col_is_pk('public', 'flashcards', 'id', 'id is the primary key');
@@ -179,6 +183,23 @@ select is(
   (select user_id from public.flashcards limit 1),
   '00000000-0000-0000-0000-000000000001'::uuid,
   'updating a flashcard preserves user_id'
+);
+
+create temporary table scheduling_token_before as
+select updated_at, schedule_version from public.flashcards limit 1;
+
+update public.flashcards
+set due = due + interval '1 day', schedule_version = schedule_version + 1;
+
+select is(
+  (select updated_at from public.flashcards limit 1),
+  (select updated_at from scheduling_token_before),
+  'scheduler-only updates preserve the content concurrency token'
+);
+select is(
+  (select schedule_version from public.flashcards limit 1),
+  (select schedule_version + 1 from scheduling_token_before),
+  'scheduler-only updates advance schedule_version'
 );
 
 create temporary table mutation_results (
