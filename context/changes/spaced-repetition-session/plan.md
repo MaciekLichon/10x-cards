@@ -509,30 +509,30 @@ when their parent card is deleted.
 
 #### Automated
 
-- [x] 2.1 Astro types and generated routes synchronize: `npx astro sync`
-- [x] 2.2 Type-aware lint passes: `npm run lint`
-- [x] 2.3 Cloudflare production build passes with server-only scheduler/admin imports: `npm run build`
-- [x] 2.4 Database contract remains green after API integration: `npm run db:test && npm run db:types:check`
+- [x] 2.1 Astro types and generated routes synchronize: `npx astro sync` — 0c88f7d
+- [x] 2.2 Type-aware lint passes: `npm run lint` — 0c88f7d
+- [x] 2.3 Cloudflare production build passes with server-only scheduler/admin imports: `npm run build` — 0c88f7d
+- [x] 2.4 Database contract remains green after API integration: `npm run db:test && npm run db:types:check` — 0c88f7d
 
 #### Manual
 
-- [x] 2.5 API inspection confirms rating payloads cannot supply `reviewed_at`, post-FSRS state, owner ID, or session membership
-- [x] 2.6 Missing server-only configuration fails closed without exposing secret values
+- [x] 2.5 API inspection confirms rating payloads cannot supply `reviewed_at`, post-FSRS state, owner ID, or session membership — 0c88f7d
+- [x] 2.6 Missing server-only configuration fails closed without exposing secret values — 0c88f7d
 
 ### Phase 3: Accessible Review Experience
 
 #### Automated
 
-- [ ] 3.1 Astro synchronization succeeds: `npx astro sync`
-- [ ] 3.2 Type-aware lint passes for the review state machine and accessibility rules: `npm run lint`
-- [ ] 3.3 Cloudflare production build succeeds: `npm run build`
+- [x] 3.1 Astro synchronization succeeds: `npx astro sync`
+- [x] 3.2 Type-aware lint passes for the review state machine and accessibility rules: `npm run lint`
+- [x] 3.3 Cloudflare production build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 Empty, active, waiting, deferred, and completed sessions match the approved behavior
-- [ ] 3.5 Keyboard-only flow reveals, rates, advances, and restores focus without hidden or prematurely enabled controls
-- [ ] 3.6 Refresh within 24 hours resumes the same session; refresh after expiry starts from a new cutoff
-- [ ] 3.7 A stale rating from another tab reconciles with an explanation and preserves confirmed progress
+- [x] 3.4 Empty, active, waiting, deferred, and completed sessions match the approved behavior
+- [x] 3.5 Keyboard-only flow reveals, rates, advances, and restores focus without hidden or prematurely enabled controls
+- [x] 3.6 Refresh within 24 hours resumes the same session; refresh after expiry starts from a new cutoff
+- [x] 3.7 A stale rating from another tab reconciles with an explanation and preserves confirmed progress
 
 ### Phase 4: Resilience and End-to-End Evidence
 

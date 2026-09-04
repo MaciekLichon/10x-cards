@@ -1,0 +1,41 @@
+---
+import SpacedRepetitionSession from "@/components/review/SpacedRepetitionSession";
+import Layout from "@/layouts/Layout.astro";
+
+const { user } = Astro.locals;
+---
+
+<Layout title="Review flashcards">
+  <main class="bg-cosmic min-h-screen px-4 py-8 text-white sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl">
+      <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm font-medium text-blue-200">10xCards</p>
+          <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+            Review session
+          </h1>
+          <p class="mt-1 text-sm text-blue-100/60">Signed in as {user?.email}</p>
+        </div>
+        <nav aria-label="Dashboard navigation" class="flex flex-wrap items-center gap-3">
+          <a
+            href="/dashboard"
+            class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
+            >AI workspace</a
+          >
+          <a
+            href="/dashboard/collection"
+            class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
+            >Collection</a
+          >
+          <a
+            href="/dashboard/review"
+            aria-current="page"
+            class="rounded-lg border border-purple-300/50 bg-purple-400/20 px-4 py-2 text-sm focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
+            >Review</a
+          >
+        </nav>
+      </header>
+      <SpacedRepetitionSession client:load />
+    </div>
+  </main>
+</Layout>
