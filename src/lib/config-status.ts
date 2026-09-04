@@ -1,4 +1,10 @@
-import { OPENROUTER_API_KEY, OPENROUTER_MODEL, SUPABASE_URL, SUPABASE_KEY } from "astro:env/server";
+import {
+  OPENROUTER_API_KEY,
+  OPENROUTER_MODEL,
+  SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_KEY,
+} from "astro:env/server";
 
 export interface ConfigStatus {
   name: string;
@@ -24,4 +30,10 @@ export const aiConfigStatus: ConfigStatus = {
   name: "OpenRouter",
   configured: Boolean(OPENROUTER_API_KEY?.trim() && OPENROUTER_MODEL?.trim()),
   message: "OpenRouter nie jest skonfigurowany — generowanie fiszek AI jest wyłączone.",
+};
+
+export const reviewConfigStatus: ConfigStatus = {
+  name: "Spaced repetition",
+  configured: Boolean(SUPABASE_URL.trim() && SUPABASE_SERVICE_ROLE_KEY?.trim()),
+  message: "Spaced repetition is unavailable because its server-only storage is not configured.",
 };

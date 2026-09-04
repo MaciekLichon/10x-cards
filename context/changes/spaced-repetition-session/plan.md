@@ -495,29 +495,29 @@ when their parent card is deleted.
 
 #### Automated
 
-- [x] 1.1 Exact scheduler smoke contract passes: `npm run verify:fsrs`
-- [x] 1.2 Cloudflare-targeted scheduler bundle succeeds: `npx astro sync && npm run build`
-- [x] 1.3 Local schema, lint, and pgTAP contracts pass: `npm run db:reset && npm run db:lint && npm run db:test`
-- [x] 1.4 Generated database types match the local schema: `npm run db:types && npm run db:types:check`
+- [x] 1.1 Exact scheduler smoke contract passes: `npm run verify:fsrs` — 6fe4e1b
+- [x] 1.2 Cloudflare-targeted scheduler bundle succeeds: `npx astro sync && npm run build` — 6fe4e1b
+- [x] 1.3 Local schema, lint, and pgTAP contracts pass: `npm run db:reset && npm run db:lint && npm run db:test` — 6fe4e1b
+- [x] 1.4 Generated database types match the local schema: `npm run db:types && npm run db:types:check` — 6fe4e1b
 
 #### Manual
 
-- [x] 1.5 Migration and tests contain no service-role-based proof of user isolation
-- [x] 1.6 Scheduler/config versions and the 24-hour session policy match the accepted planning decisions
+- [x] 1.5 Migration and tests contain no service-role-based proof of user isolation — 6fe4e1b
+- [x] 1.6 Scheduler/config versions and the 24-hour session policy match the accepted planning decisions — 6fe4e1b
 
 ### Phase 2: Authoritative Scheduling APIs
 
 #### Automated
 
-- [ ] 2.1 Astro types and generated routes synchronize: `npx astro sync`
-- [ ] 2.2 Type-aware lint passes: `npm run lint`
-- [ ] 2.3 Cloudflare production build passes with server-only scheduler/admin imports: `npm run build`
-- [ ] 2.4 Database contract remains green after API integration: `npm run db:test && npm run db:types:check`
+- [x] 2.1 Astro types and generated routes synchronize: `npx astro sync`
+- [x] 2.2 Type-aware lint passes: `npm run lint`
+- [x] 2.3 Cloudflare production build passes with server-only scheduler/admin imports: `npm run build`
+- [x] 2.4 Database contract remains green after API integration: `npm run db:test && npm run db:types:check`
 
 #### Manual
 
-- [ ] 2.5 API inspection confirms rating payloads cannot supply `reviewed_at`, post-FSRS state, owner ID, or session membership
-- [ ] 2.6 Missing server-only configuration fails closed without exposing secret values
+- [x] 2.5 API inspection confirms rating payloads cannot supply `reviewed_at`, post-FSRS state, owner ID, or session membership
+- [x] 2.6 Missing server-only configuration fails closed without exposing secret values
 
 ### Phase 3: Accessible Review Experience
 
