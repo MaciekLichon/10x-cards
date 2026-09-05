@@ -1,6 +1,6 @@
 begin;
 
-select plan(46);
+select plan(50);
 
 select has_table('public', 'flashcard_review_sessions', 'review sessions table exists');
 select has_table('public', 'flashcard_review_session_cards', 'normalized session membership table exists');
@@ -83,7 +83,39 @@ select ok(
 
 insert into auth.users (id, aud, role, email) values
   ('10000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', 'review-owner@example.test'),
-  ('20000000-0000-0000-0000-000000000002', 'authenticated', 'authenticated', 'review-other@example.test');
+  ('20000000-0000-0000-0000-000000000002', 'authenticated', 'authenticated', 'review-other@example.test'),
+  ('30000000-0000-0000-0000-000000000003', 'authenticated', 'authenticated', 'review-empty@example.test');
+
+create temporary table empty_session as
+select public.get_or_create_review_session(
+  '30000000-0000-0000-0000-000000000003',
+  '2026-09-02 10:00:00+00'
+) as value;
+
+select is(
+  (select value ->> 'status' from empty_session),
+  'completed',
+  'an empty acquisition closes immediately instead of blocking newly due cards for 24 hours'
+);
+
+insert into public.flashcards (id, user_id, front, back, created_at, due)
+values (
+  '33000000-0000-0000-0000-000000000003',
+  '30000000-0000-0000-0000-000000000003',
+  'Created after empty session',
+  'Answer',
+  '2026-09-02 10:01:00+00',
+  '2026-09-02 10:01:00+00'
+);
+
+select isnt(
+  public.get_or_create_review_session(
+    '30000000-0000-0000-0000-000000000003',
+    '2026-09-02 10:02:00+00'
+  ) ->> 'id',
+  (select value ->> 'id' from empty_session),
+  'a card created after an empty session is admitted to a new session'
+);
 
 insert into public.flashcards (id, user_id, front, back, created_at, due) values
   ('11000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Due 1', 'Answer', '2026-09-01 09:00:00+00', '2026-09-01 09:00:00+00'),
@@ -108,7 +140,8 @@ select is(
   'acquisition admits only the owner due cards'
 );
 select results_eq(
-  $$select flashcard_id from public.flashcard_review_session_cards order by ordinal$$,
+  $$select flashcard_id from public.flashcard_review_session_cards
+    where user_id = '10000000-0000-0000-0000-000000000001' order by ordinal$$,
   $$values ('11000000-0000-0000-0000-000000000001'::uuid), ('11000000-0000-0000-0000-000000000002'::uuid)$$,
   'membership follows due then id ordering'
 );
@@ -211,6 +244,34 @@ select is_empty('select * from public.flashcard_review_logs', 'deleting a card c
 select is_empty(
   $$select * from public.flashcard_review_session_cards where flashcard_id = '11000000-0000-0000-0000-000000000001'$$,
   'deleting a card cascades its membership'
+);
+
+delete from public.flashcards where id = '11000000-0000-0000-0000-000000000002';
+insert into public.flashcards (id, user_id, front, back, created_at, due)
+values (
+  '11000000-0000-0000-0000-000000000003',
+  '10000000-0000-0000-0000-000000000001',
+  'Due after cascade',
+  'Answer',
+  '2026-09-02 11:01:00+00',
+  '2026-09-02 11:01:00+00'
+);
+
+create temporary table post_delete_session as
+select public.get_or_create_review_session(
+  '10000000-0000-0000-0000-000000000001',
+  '2026-09-02 11:02:00+00'
+) as value;
+
+select isnt(
+  (select value ->> 'id' from post_delete_session),
+  (select value ->> 'id' from acquired_session),
+  'acquisition replaces an active session whose unfinished membership was deleted'
+);
+select is(
+  (select status from public.flashcard_review_sessions where id = (select (value ->> 'id')::uuid from acquired_session)),
+  'completed',
+  'acquisition closes an active session with no unfinished members'
 );
 
 select * from finish();

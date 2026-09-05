@@ -45,6 +45,12 @@ export default defineConfig({
           "delete_lost_response",
         ],
       }),
+      DEV_REVIEW_FAILURE_MODE: envField.enum({
+        context: "server",
+        access: "secret",
+        optional: true,
+        values: ["session_failure", "rating_failure", "rating_lost_response", "rating_stale_transition"],
+      }),
     },
   },
 });

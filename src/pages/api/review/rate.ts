@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { DEV_REVIEW_FAILURE_MODE } from "astro:env/server";
 import { isSameOriginRequest } from "@/lib/auth";
 import { scheduleReview } from "@/lib/fsrs";
 import { acquireReviewSession, readReviewSession } from "@/lib/review-session";
@@ -41,6 +42,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const admin = createAdminClient();
   if (!admin) return jsonError(503, "review_unavailable", "Spaced repetition is temporarily unavailable.");
+  if (import.meta.env.DEV && DEV_REVIEW_FAILURE_MODE === "rating_failure") {
+    return jsonError(503, "review_ambiguous", "The rating could not be applied. Retry with the same request ID.");
+  }
   const reviewedAt = new Date();
 
   try {
@@ -65,6 +69,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
       if (replayError) return await mapReviewError(admin, locals.user.id, replayError.message);
       return await successfulReviewResponse(admin, locals.user.id, replayed, parsed.data.rating, reviewedAt);
+    }
+
+    if (import.meta.env.DEV && DEV_REVIEW_FAILURE_MODE === "rating_stale_transition") {
+      return await conflictResponse(admin, locals.user.id, "stale_schedule_version", "This card was already reviewed.");
     }
 
     const [sessionResult, memberResult, cardResult] = await Promise.all([
@@ -142,6 +150,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       p_result: canonicalResult,
     });
     if (error) return await mapReviewError(admin, locals.user.id, error.message);
+    if (import.meta.env.DEV && DEV_REVIEW_FAILURE_MODE === "rating_lost_response") {
+      return jsonError(
+        503,
+        "review_ambiguous",
+        "The rating was applied but its response was lost. Retry with the same request ID.",
+      );
+    }
     return await successfulReviewResponse(admin, locals.user.id, rpcResult, parsed.data.rating, reviewedAt);
   } catch {
     return jsonError(

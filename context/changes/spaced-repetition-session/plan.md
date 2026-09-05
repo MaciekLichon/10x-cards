@@ -523,29 +523,29 @@ when their parent card is deleted.
 
 #### Automated
 
-- [x] 3.1 Astro synchronization succeeds: `npx astro sync`
-- [x] 3.2 Type-aware lint passes for the review state machine and accessibility rules: `npm run lint`
-- [x] 3.3 Cloudflare production build succeeds: `npm run build`
+- [x] 3.1 Astro synchronization succeeds: `npx astro sync` — 8e9e224
+- [x] 3.2 Type-aware lint passes for the review state machine and accessibility rules: `npm run lint` — 8e9e224
+- [x] 3.3 Cloudflare production build succeeds: `npm run build` — 8e9e224
 
 #### Manual
 
-- [x] 3.4 Empty, active, waiting, deferred, and completed sessions match the approved behavior
-- [x] 3.5 Keyboard-only flow reveals, rates, advances, and restores focus without hidden or prematurely enabled controls
-- [x] 3.6 Refresh within 24 hours resumes the same session; refresh after expiry starts from a new cutoff
-- [x] 3.7 A stale rating from another tab reconciles with an explanation and preserves confirmed progress
+- [x] 3.4 Empty, active, waiting, deferred, and completed sessions match the approved behavior — 8e9e224
+- [x] 3.5 Keyboard-only flow reveals, rates, advances, and restores focus without hidden or prematurely enabled controls — 8e9e224
+- [x] 3.6 Refresh within 24 hours resumes the same session; refresh after expiry starts from a new cutoff — 8e9e224
+- [x] 3.7 A stale rating from another tab reconciles with an explanation and preserves confirmed progress — 8e9e224
 
 ### Phase 4: Resilience and End-to-End Evidence
 
 #### Automated
 
-- [ ] 4.1 Complete local database gate passes: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check`
-- [ ] 4.2 Ordinary-client RLS and review verifier passes: `npm run db:verify-rls && npm run verify:spaced-repetition`
-- [ ] 4.3 Scheduler contract passes: `npm run verify:fsrs`
-- [ ] 4.4 Final application gates pass: `npx astro sync && npm run lint && npm run build`
+- [x] 4.1 Complete local database gate passes: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check`
+- [x] 4.2 Ordinary-client RLS and review verifier passes: `npm run db:verify-rls && npm run verify:spaced-repetition`
+- [x] 4.3 Scheduler contract passes: `npm run verify:fsrs`
+- [x] 4.4 Final application gates pass: `npx astro sync && npm run lint && npm run build`
 
 #### Manual
 
-- [ ] 4.5 Manual verification matrix is complete with no unresolved failed scenario
-- [ ] 4.6 No rating is lost or applied twice during refresh, lost-response, and two-tab scenarios
-- [ ] 4.7 No tested path reveals or mutates another user's card, session, or review history
-- [ ] 4.8 Desktop keyboard, focus, countdown, error, empty, and completion experiences are acceptable
+- [x] 4.5 Manual verification matrix is complete with no unresolved failed scenario
+- [x] 4.6 No rating is lost or applied twice during refresh, lost-response, and two-tab scenarios
+- [x] 4.7 No tested path reveals or mutates another user's card, session, or review history
+- [x] 4.8 Desktop keyboard, focus, countdown, error, empty, and completion experiences are acceptable

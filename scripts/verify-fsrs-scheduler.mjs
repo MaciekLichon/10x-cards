@@ -42,10 +42,17 @@ const reviewedAt = new Date("2026-09-02T10:00:00.000Z");
 for (const rating of ACCEPTED_RATINGS) {
   const result = scheduler.next(createEmptyCard(reviewedAt), reviewedAt, parseRating(rating));
   assert.equal(result.log.rating, rating);
+  assert.equal(result.card.reps, 1);
+  assert.equal(result.card.state >= 1 && result.card.state <= 3, true);
   assert.equal(typeof toCanonicalIso(result.card.due), "string");
   assert.equal(typeof toCanonicalIso(result.log.review), "string");
   assert.equal(result.card.last_review && typeof toCanonicalIso(result.card.last_review), "string");
 }
+
+const deterministicInput = createEmptyCard(reviewedAt);
+const firstGood = scheduler.next(deterministicInput, reviewedAt, Rating.Good);
+const secondGood = scheduler.next(deterministicInput, reviewedAt, Rating.Good);
+assert.deepEqual(firstGood, secondGood, "fuzz-free scheduling is deterministic for the same card, time, and rating");
 
 for (const invalidRating of [Rating.Manual, -1, 5, 1.5, "3", null]) {
   assert.throws(() => parseRating(invalidRating), TypeError);

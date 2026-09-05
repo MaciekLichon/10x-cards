@@ -160,6 +160,12 @@ async function main() {
   assert(!ownerUpdateError && updatedCard?.front === "RLS owner question updated", "owner updates their card");
   assert(updatedCard.updated_at !== insertedCard.updated_at, "owner update advances the card version");
 
+  const { error: schedulerUpdateError } = await ownerClient
+    .from("flashcards")
+    .update({ due: new Date(0).toISOString() })
+    .eq("id", insertedCard.id);
+  assert(Boolean(schedulerUpdateError), "owner cannot update scheduler columns through the ordinary client");
+
   const { data: staleUpdated, error: staleUpdateError } = await ownerClient
     .from("flashcards")
     .update({ front: "Stale update must not land" })

@@ -156,6 +156,17 @@ begin
   set status = 'expired'
   where user_id = p_user_id and status = 'active' and expires_at <= p_cutoff;
 
+  update public.flashcard_review_sessions as session
+  set status = 'completed', completed_at = p_cutoff
+  where session.user_id = p_user_id
+    and session.status = 'active'
+    and not exists (
+      select 1
+      from public.flashcard_review_session_cards as member
+      where member.session_id = session.id
+        and member.state not in ('completed', 'deferred')
+    );
+
   select * into v_session
   from public.flashcard_review_sessions
   where user_id = p_user_id and status = 'active'
@@ -175,6 +186,15 @@ begin
       order by due, id
       limit 20
     ) as due_card;
+
+    if not exists (
+      select 1 from public.flashcard_review_session_cards where session_id = v_session.id
+    ) then
+      update public.flashcard_review_sessions
+      set status = 'completed', completed_at = p_cutoff
+      where id = v_session.id and user_id = p_user_id
+      returning * into v_session;
+    end if;
   end if;
 
   return jsonb_build_object(

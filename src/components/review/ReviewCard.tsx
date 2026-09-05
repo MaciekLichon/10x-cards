@@ -18,9 +18,18 @@ export default function ReviewCard({ card, busy, onRate }: Props) {
     requestAnimationFrame(() => headingRef.current?.focus());
   }, [card.id, card.reviewCount]);
 
+  useEffect(() => {
+    if (!revealed) return;
+    const frame = requestAnimationFrame(() => {
+      ratingGroupRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, [revealed]);
+
   function reveal() {
     setRevealed(true);
-    requestAnimationFrame(() => ratingGroupRef.current?.focus());
   }
 
   return (

@@ -11,6 +11,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "verify:fsrs": "node scripts/verify-fsrs-scheduler.mjs",
+    "verify:spaced-repetition": "node scripts/verify-spaced-repetition.mjs",
     "db:reset": "supabase db reset",
     "db:lint": "supabase db lint --local --fail-on error",
     "db:test": "supabase test db",
