@@ -538,14 +538,14 @@ when their parent card is deleted.
 
 #### Automated
 
-- [x] 4.1 Complete local database gate passes: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check`
-- [x] 4.2 Ordinary-client RLS and review verifier passes: `npm run db:verify-rls && npm run verify:spaced-repetition`
-- [x] 4.3 Scheduler contract passes: `npm run verify:fsrs`
-- [x] 4.4 Final application gates pass: `npx astro sync && npm run lint && npm run build`
+- [x] 4.1 Complete local database gate passes: `npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check` — 6f77f2d
+- [x] 4.2 Ordinary-client RLS and review verifier passes: `npm run db:verify-rls && npm run verify:spaced-repetition` — 6f77f2d
+- [x] 4.3 Scheduler contract passes: `npm run verify:fsrs` — 6f77f2d
+- [x] 4.4 Final application gates pass: `npx astro sync && npm run lint && npm run build` — 6f77f2d
 
 #### Manual
 
-- [x] 4.5 Manual verification matrix is complete with no unresolved failed scenario
-- [x] 4.6 No rating is lost or applied twice during refresh, lost-response, and two-tab scenarios
-- [x] 4.7 No tested path reveals or mutates another user's card, session, or review history
-- [x] 4.8 Desktop keyboard, focus, countdown, error, empty, and completion experiences are acceptable
+- [x] 4.5 Manual verification matrix is complete with no unresolved failed scenario — 6f77f2d
+- [x] 4.6 No rating is lost or applied twice during refresh, lost-response, and two-tab scenarios — 6f77f2d
+- [x] 4.7 No tested path reveals or mutates another user's card, session, or review history — 6f77f2d
+- [x] 4.8 Desktop keyboard, focus, countdown, error, empty, and completion experiences are acceptable — 6f77f2d

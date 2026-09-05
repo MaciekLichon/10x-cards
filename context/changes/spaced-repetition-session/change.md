@@ -1,9 +1,9 @@
 ---
 change_id: spaced-repetition-session
 title: Dostarcz sesję zaplanowanych powtórek
-status: implementing
+status: implemented
 created: 2026-08-31
-updated: 2026-09-05
+updated: 2026-09-06
 archived_at: null
 ---
 
