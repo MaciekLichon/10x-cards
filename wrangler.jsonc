@@ -21,6 +21,6 @@
     "required": ["SUPABASE_URL", "SUPABASE_KEY", "OPENROUTER_API_KEY"],
   },
   "vars": {
-    "OPENROUTER_MODEL": "replace-with-a-structured-output-compatible-model",
+    "OPENROUTER_MODEL": "openrouter/free",
   },
 }
