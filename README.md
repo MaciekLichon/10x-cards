@@ -78,6 +78,8 @@ npm run build
 - `npm run dev` - Start development server (Cloudflare workerd runtime)
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
+- `npm run test` - Run application tests once with Vitest
+- `npm run test:watch` - Run application tests in Vitest watch mode
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
