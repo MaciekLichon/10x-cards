@@ -443,18 +443,18 @@ Nie zmieniamy statusu istniejącego S-02 ani innych etapów produktu.
 
 #### Automated
 
-- [x] 1.1 Testy API przechodzą bez usług zewnętrznych: `npm run test -- tests/integration/flashcards/generate.test.ts`.
-- [x] 1.2 Macierz API obejmuje błędne koperty i treść, brak użytecznych kart, mieszane wyniki, granice wejścia i kart, duplikaty, limit zestawu oraz błędy dostawcy.
-- [x] 1.3 Synchronizacja, lint, typy i build przechodzą: `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`.
+- [x] 1.1 Testy API przechodzą bez usług zewnętrznych: `npm run test -- tests/integration/flashcards/generate.test.ts`. — 2734e42
+- [x] 1.2 Macierz API obejmuje błędne koperty i treść, brak użytecznych kart, mieszane wyniki, granice wejścia i kart, duplikaty, limit zestawu oraz błędy dostawcy. — 2734e42
+- [x] 1.3 Synchronizacja, lint, typy i build przechodzą: `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`. — 2734e42
 
 ### Phase 2: Testy odzyskiwania po błędach i neutralny komunikat
 
 #### Automated
 
-- [ ] 2.1 Testy komponentu przechodzą: `npm run test -- tests/integration/flashcards/FlashcardWorkspace.test.tsx`.
-- [ ] 2.2 Testy dowodzą zachowania tekstu, edycji i odrzuceń po błędzie, poprawnego ponowienia, anulowania zastąpienia oraz blokady wszystkich istniejących kontrolek podczas drugiego, oczekującego żądania po udanym generowaniu.
-- [ ] 2.3 Mały zestaw pokazuje neutralny komunikat, a normalny zestaw go nie pokazuje; interfejs nie przypisuje liczbie kart przyczyny semantycznej.
-- [ ] 2.4 Cały zestaw i istniejące kontrole przechodzą: `npm run test`, `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`.
+- [x] 2.1 Testy komponentu przechodzą: `npm run test -- tests/integration/flashcards/FlashcardWorkspace.test.tsx`.
+- [x] 2.2 Testy dowodzą zachowania tekstu, edycji i odrzuceń po błędzie, poprawnego ponowienia, anulowania zastąpienia oraz blokady wszystkich istniejących kontrolek podczas drugiego, oczekującego żądania po udanym generowaniu.
+- [x] 2.3 Mały zestaw pokazuje neutralny komunikat, a normalny zestaw go nie pokazuje; interfejs nie przypisuje liczbie kart przyczyny semantycznej.
+- [x] 2.4 Cały zestaw i istniejące kontrole przechodzą: `npm run test`, `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`.
 
 ### Phase 3: Materiały wzorcowe, procedura oceny i cookbook
 

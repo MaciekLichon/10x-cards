@@ -35,7 +35,7 @@ export function ProposalList({ proposals, disabled, sparse, onChange, onToggle }
           role="status"
           className="rounded-lg border border-amber-400/30 bg-amber-900/20 px-4 py-3 text-sm text-amber-100"
         >
-          This source contained fewer than five distinct useful concepts, so no filler cards were added.
+          Fewer than five proposals were returned. Review them against your source.
         </p>
       )}
 
