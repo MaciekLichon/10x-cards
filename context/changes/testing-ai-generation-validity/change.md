@@ -1,7 +1,7 @@
 ---
 change_id: testing-ai-generation-validity
 title: Test AI generation validity and source fidelity
-status: implementing
+status: implemented
 created: 2026-09-06
 updated: 2026-09-11
 archived_at: null
