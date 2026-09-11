@@ -7,7 +7,9 @@
 - Application revision (`git rev-parse --short HEAD`): `a452a28`
 - Sample ID and approved revision: `conditions-pl`, revision 1
 - Source language: Polish
-- Configured model identifier: `Nex-N2.5-Mini (free)`
+- Requested model/router identifier: `openrouter/free`
+- Actual routed model identifier: `not captured during this run`
+- Observed model display label: `Nex-N2.5-Mini (free)`
 - Attempt number for this sample and date: attempt 1, 2026-09-11
 - Provider outcome: `cards returned`
 - Number of cards returned: 7

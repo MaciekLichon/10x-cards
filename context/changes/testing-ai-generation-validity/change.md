@@ -1,7 +1,7 @@
 ---
 change_id: testing-ai-generation-validity
 title: Test AI generation validity and source fidelity
-status: implemented
+status: impl_reviewed
 created: 2026-09-06
 updated: 2026-09-11
 archived_at: null
@@ -56,6 +56,8 @@ unless a blocker or test-plan correction requires returning to `/10x-test-plan`.
   and approves the references before generated cards are assessed; drafts alone are not human-validated evidence.
 - Interview Q4: Deliver the reference materials and assessment procedure in this rollout. The first review of live
   generated output is deferred and is not a completion prerequisite; do not claim measured source fidelity at closure.
+  Superseded on 2026-09-08 during plan review: the final plan expanded acceptance to require one real generation run
+  and a documented human assessment. See `plan.md` and `reviews/plan-review.md`.
 - Interview Q5: Assess factual fidelity separately from usefulness. Unsupported, contradictory, or source-unanswerable
   answers fail fidelity; record omissions, edits, and usefulness descriptively without a fixed percentage threshold.
 - The user approved three implementation phases: API contract tests; UI recovery tests and neutral sparse copy;
