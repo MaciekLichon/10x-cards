@@ -51,8 +51,10 @@ npm run dev
 
 AI generation uses OpenRouter from server code only. Copy `.env.example` to both ignored local files, `.env` and
 `.dev.vars`, then set `OPENROUTER_API_KEY` and `OPENROUTER_MODEL`. The model is configuration-driven and must support the
-strict JSON-schema response format required by the application. Never copy keys, source text, or generated card content
-into logs, screenshots, commits, or review artifacts.
+strict JSON-schema response format required by the application. Never copy keys, private source text, or private
+generated card content into logs, screenshots, commits, or review artifacts. The only committed content-review
+exception is an explicitly approved synthetic sample and the deliberately retained unedited output generated from it;
+see `tests/quality/ai-generation/README.md` for the approval, review, and redaction rules.
 
 For Cloudflare, add `OPENROUTER_API_KEY` as an encrypted secret (for example with
 `npx wrangler secret put OPENROUTER_API_KEY`) and configure `OPENROUTER_MODEL` as a server-side Workers variable. Do not

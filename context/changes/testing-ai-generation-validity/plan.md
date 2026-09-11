@@ -451,22 +451,22 @@ Nie zmieniamy statusu istniejącego S-02 ani innych etapów produktu.
 
 #### Automated
 
-- [x] 2.1 Testy komponentu przechodzą: `npm run test -- tests/integration/flashcards/FlashcardWorkspace.test.tsx`.
-- [x] 2.2 Testy dowodzą zachowania tekstu, edycji i odrzuceń po błędzie, poprawnego ponowienia, anulowania zastąpienia oraz blokady wszystkich istniejących kontrolek podczas drugiego, oczekującego żądania po udanym generowaniu.
-- [x] 2.3 Mały zestaw pokazuje neutralny komunikat, a normalny zestaw go nie pokazuje; interfejs nie przypisuje liczbie kart przyczyny semantycznej.
-- [x] 2.4 Cały zestaw i istniejące kontrole przechodzą: `npm run test`, `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`.
+- [x] 2.1 Testy komponentu przechodzą: `npm run test -- tests/integration/flashcards/FlashcardWorkspace.test.tsx`. — a452a28
+- [x] 2.2 Testy dowodzą zachowania tekstu, edycji i odrzuceń po błędzie, poprawnego ponowienia, anulowania zastąpienia oraz blokady wszystkich istniejących kontrolek podczas drugiego, oczekującego żądania po udanym generowaniu. — a452a28
+- [x] 2.3 Mały zestaw pokazuje neutralny komunikat, a normalny zestaw go nie pokazuje; interfejs nie przypisuje liczbie kart przyczyny semantycznej. — a452a28
+- [x] 2.4 Cały zestaw i istniejące kontrole przechodzą: `npm run test`, `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`. — a452a28
 
 ### Phase 3: Materiały wzorcowe, procedura oceny i cookbook
 
 #### Automated
 
-- [ ] 3.1 Trzy pliki źródłowe, wzorce faktów, rubryka, szablon oceny i instrukcja istnieją; każdy tekst mieści się w zakresie 1 000–10 000 znaków po trimowaniu.
-- [ ] 3.2 Dokumentacja ma poprawny format: `npx prettier --check tests/quality/ai-generation/*.md README.md context/foundation/test-plan.md`.
-- [ ] 3.3 Końcowe testy i kontrole przechodzą: `npm run test`, `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`.
+- [x] 3.1 Trzy pliki źródłowe, wzorce faktów, rubryka, szablon oceny i instrukcja istnieją; każdy tekst mieści się w zakresie 1 000–10 000 znaków po trimowaniu.
+- [x] 3.2 Dokumentacja ma poprawny format: `npx prettier --check tests/quality/ai-generation/*.md README.md context/foundation/test-plan.md`.
+- [x] 3.3 Końcowe testy i kontrole przechodzą: `npm run test`, `npx astro sync`, `npm run lint`, `npx astro check`, `npm run build`.
 
 #### Manual
 
-- [ ] 3.4 Użytkownik sprawdził, poprawił i zatwierdził trzy teksty, oczekiwane fakty oraz kryteria; wzorce zawierają datę i potwierdzenie tej weryfikacji.
-- [ ] 3.5 Użytkownik wykonał jeden przebieg dla wybranej zatwierdzonej próbki, zachował nieedytowane karty i ocenił każdą według rubryki; zapis zawiera dowody, wynik wierności zestawu oraz opisową ocenę użyteczności.
-- [ ] 3.6 Użytkownik potwierdził, że instrukcja rozdziela wynik wierności od użyteczności i pozwala powtórzyć ocenę bez dopowiadania zasad.
-- [ ] 3.7 Cookbook §6.1 i §6.2 wskazuje działające komendy, zweryfikowane materiały i zapis pierwszej rzeczywistej oceny.
+- [x] 3.4 Użytkownik sprawdził, poprawił i zatwierdził trzy teksty, oczekiwane fakty oraz kryteria; wzorce zawierają datę i potwierdzenie tej weryfikacji.
+- [x] 3.5 Użytkownik wykonał jeden przebieg dla wybranej zatwierdzonej próbki, zachował nieedytowane karty i ocenił każdą według rubryki; zapis zawiera dowody, wynik wierności zestawu oraz opisową ocenę użyteczności.
+- [x] 3.6 Użytkownik potwierdził, że instrukcja rozdziela wynik wierności od użyteczności i pozwala powtórzyć ocenę bez dopowiadania zasad.
+- [x] 3.7 Cookbook §6.1 i §6.2 wskazuje działające komendy, zweryfikowane materiały i zapis pierwszej rzeczywistej oceny.

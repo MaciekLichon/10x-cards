@@ -1,0 +1,9 @@
+Orion Cache to fikcyjny system pamięci podręcznej dla wdrożeń aplikacji. Każdy wpis ma klucz, wartość, numer generacji i czas wygaśnięcia. Zapis istniejącego klucza tworzy nową generację, ale nie zmienia czasu wygaśnięcia, chyba że żądanie jawnie podaje nowy czas. Odczyt zwraca wyłącznie najnowszą generację, która nie wygasła.
+
+Wpis może zostać oznaczony jako chroniony. Chronionego wpisu nie wolno usunąć zwykłym żądaniem, nawet jeśli żądający utworzył jego bieżącą generację. Usunięcie jest dozwolone tylko wtedy, gdy żądanie zawiera jednorazowy kod administracyjny i numer najnowszej generacji. Kod prawidłowy dla starszej generacji nie wystarcza. Wyjątkiem jest automatyczne wygaśnięcie: system usuwa wygasły wpis bez kodu, niezależnie od ochrony.
+
+Klient może wykonać odczyt warunkowy z oczekiwanym numerem generacji. Gdy numer jest zgodny, system zwraca wartość i znacznik „bez zmian”. Gdy numer jest niezgodny, system zwraca wyłącznie aktualny numer generacji, bez wartości. Jeśli wpis nie istnieje albo wygasł, odpowiedź brzmi „brak”; system nie ujawnia wtedy ostatniego numeru generacji.
+
+Replikacja działa tylko z regionu głównego do regionu zapasowego. Zapis przyjęty w regionie głównym trafia do repliki najwyżej po 30 sekundach. Region zapasowy nie przyjmuje zapisów, dopóki nie zostanie jawnie promowany. Po promocji staje się nowym regionem głównym i może przyjmować zapisy, lecz system nie scala automatycznie zmian z dawnego regionu głównego.
+
+Podczas prac serwisowych administrator może włączyć tryb tylko do odczytu. W tym trybie odczyty, także warunkowe, nadal działają, a zapis, zwykłe usunięcie i promocja regionu są odrzucane. Automatyczne wygaśnięcie nadal usuwa wpisy. Wyłączenie trybu tylko do odczytu nie przywraca wpisów, które wygasły podczas prac serwisowych.
