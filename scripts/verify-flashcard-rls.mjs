@@ -44,6 +44,58 @@ const otherClient = createClient(supabaseUrl, supabaseKey, clientOptions);
 const anonymousClient = createClient(supabaseUrl, supabaseKey, clientOptions);
 const runId = `${Date.now()}-${randomUUID()}`;
 const password = `Local-only-${randomUUID()}-Aa1!`;
+const snapshotColumns = [
+  "id",
+  "user_id",
+  "front",
+  "back",
+  "created_at",
+  "updated_at",
+  "due",
+  "stability",
+  "difficulty",
+  "elapsed_days",
+  "scheduled_days",
+  "learning_steps",
+  "reps",
+  "lapses",
+  "state",
+  "last_review",
+  "schedule_version",
+  "scheduler_version",
+  "config_version",
+].join(", ");
+
+const fixtures = {
+  target: {
+    id: "10000000-0000-4000-8000-000000000001",
+    front: "Target question",
+    back: "Target answer",
+  },
+  decoy: {
+    id: "10000000-0000-4000-8000-000000000002",
+    front: "Decoy question",
+    back: "Decoy answer",
+  },
+  approved: [
+    {
+      id: "20000000-0000-4000-8000-000000000001",
+      front: "Approved question one",
+      back: "Approved answer one",
+    },
+    {
+      id: "20000000-0000-4000-8000-000000000002",
+      front: "Approved question two",
+      back: "Approved answer two",
+    },
+  ],
+  sentinelId: "20000000-0000-4000-8000-000000000099",
+  atomicNovel: {
+    id: "30000000-0000-4000-8000-000000000001",
+    front: "Atomic novel question",
+    back: "Atomic novel answer",
+  },
+};
 
 function pass(message) {
   console.log(`PASS: ${message}`);
@@ -54,6 +106,21 @@ function assert(condition, message) {
     throw new Error(`FAIL: ${message}`);
   }
   pass(message);
+}
+
+function assertJsonEqual(actual, expected, message) {
+  assert(JSON.stringify(actual) === JSON.stringify(expected), message);
+}
+
+async function ownerSnapshot() {
+  const { data, error } = await ownerClient.from("flashcards").select(snapshotColumns).order("id");
+  assert(!error, "owner snapshot reads all durable flashcard columns");
+  return data;
+}
+
+async function assertOwnerSnapshotUnchanged(before, message) {
+  const after = await ownerSnapshot();
+  assertJsonEqual(after, before, message);
 }
 
 async function createAuthenticatedUser(client, label) {
@@ -97,141 +164,260 @@ async function createAuthenticatedUser(client, label) {
 
 async function main() {
   console.log("Verifying flashcard RLS against the local Supabase API...");
+  console.log("Prerequisite: use an isolated local stack reset with `npm run db:reset` before this verifier.");
 
   const ownerId = await createAuthenticatedUser(ownerClient, "owner");
-  await createAuthenticatedUser(otherClient, "other");
+  const otherId = await createAuthenticatedUser(otherClient, "other");
 
-  const { data: insertedCard, error: insertError } = await ownerClient
+  const { data: insertedCards, error: insertError } = await ownerClient
     .from("flashcards")
-    .insert({ front: "RLS owner question", back: "RLS owner answer" })
-    .select()
-    .single();
-  assert(!insertError && insertedCard?.user_id === ownerId, "owner inserts a card with database-assigned ownership");
+    .insert([fixtures.target, fixtures.decoy])
+    .select(snapshotColumns)
+    .order("id");
+  assert(
+    !insertError && insertedCards?.length === 2 && insertedCards.every((card) => card.user_id === ownerId),
+    `owner inserts deterministic target and decoy cards with database-assigned ownership${insertError ? ` (${insertError.message})` : ""}`,
+  );
+
+  const targetBefore = insertedCards.find((card) => card.id === fixtures.target.id);
+  const decoyBefore = insertedCards.find((card) => card.id === fixtures.decoy.id);
+  assert(Boolean(targetBefore && decoyBefore), "target and decoy fixtures are independently identifiable by stable ID");
 
   const { data: ownerCards, error: ownerSelectError } = await ownerClient
     .from("flashcards")
     .select("id, user_id")
-    .eq("id", insertedCard.id);
+    .eq("id", fixtures.target.id);
   assert(!ownerSelectError && ownerCards.length === 1, "owner selects their card");
 
   const { data: otherCards, error: otherSelectError } = await otherClient
     .from("flashcards")
     .select("id")
-    .eq("id", insertedCard.id);
+    .eq("id", fixtures.target.id);
   assert(!otherSelectError && otherCards.length === 0, "second user cannot select the owner's card");
 
+  let beforeDeniedWrite = await ownerSnapshot();
   const { data: otherUpdated, error: otherUpdateError } = await otherClient
     .from("flashcards")
     .update({ front: "Cross-account update" })
-    .eq("id", insertedCard.id)
+    .eq("id", fixtures.target.id)
     .select("id");
   assert(!otherUpdateError && otherUpdated.length === 0, "second user cannot update the owner's card");
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "cross-account update leaves the complete owner state unchanged",
+  );
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { data: otherDeleted, error: otherDeleteError } = await otherClient
     .from("flashcards")
     .delete()
-    .eq("id", insertedCard.id)
+    .eq("id", fixtures.target.id)
     .select("id");
   assert(!otherDeleteError && otherDeleted.length === 0, "second user cannot delete the owner's card");
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "cross-account delete leaves the complete owner state unchanged",
+  );
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { error: spoofedInsertError } = await otherClient
     .from("flashcards")
     .insert({ user_id: ownerId, front: "Spoofed owner", back: "Must be rejected" });
   assert(Boolean(spoofedInsertError), "second user cannot insert a card owned by the first user");
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "spoofed ownership insert leaves the complete owner state unchanged",
+  );
 
   const { data: anonymousCards, error: anonymousSelectError } = await anonymousClient
     .from("flashcards")
     .select("id")
-    .eq("id", insertedCard.id);
+    .eq("id", fixtures.target.id);
   assert(!anonymousSelectError && anonymousCards.length === 0, "anonymous client cannot select the owner's card");
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { error: anonymousInsertError } = await anonymousClient
     .from("flashcards")
     .insert({ front: "Anonymous question", back: "Must be rejected" });
   assert(Boolean(anonymousInsertError), "anonymous client cannot insert a card");
+  await assertOwnerSnapshotUnchanged(beforeDeniedWrite, "anonymous insert leaves the complete owner state unchanged");
 
+  beforeDeniedWrite = await ownerSnapshot();
+  const { data: anonymousUpdated, error: anonymousUpdateError } = await anonymousClient
+    .from("flashcards")
+    .update({ front: "Anonymous update" })
+    .eq("id", fixtures.target.id)
+    .select("id");
+  assert(!anonymousUpdateError && anonymousUpdated.length === 0, "anonymous client cannot update the owner's card");
+  await assertOwnerSnapshotUnchanged(beforeDeniedWrite, "anonymous update leaves the complete owner state unchanged");
+
+  beforeDeniedWrite = await ownerSnapshot();
+  const { data: anonymousDeleted, error: anonymousDeleteError } = await anonymousClient
+    .from("flashcards")
+    .delete()
+    .eq("id", fixtures.target.id)
+    .select("id");
+  assert(!anonymousDeleteError && anonymousDeleted.length === 0, "anonymous client cannot delete the owner's card");
+  await assertOwnerSnapshotUnchanged(beforeDeniedWrite, "anonymous delete leaves the complete owner state unchanged");
+
+  beforeDeniedWrite = await ownerSnapshot();
+  const { error: transferError } = await ownerClient
+    .from("flashcards")
+    .update({ user_id: otherId })
+    .eq("id", fixtures.target.id);
+  assert(Boolean(transferError), "owner cannot transfer a card to another user through the ordinary client");
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "denied ownership transfer leaves the complete owner state unchanged",
+  );
+
+  const beforeOwnerUpdate = await ownerSnapshot();
   const { data: updatedCard, error: ownerUpdateError } = await ownerClient
     .from("flashcards")
-    .update({ front: "RLS owner question updated" })
-    .eq("id", insertedCard.id)
-    .eq("updated_at", insertedCard.updated_at)
-    .select("id, front, updated_at")
+    .update({ front: "Target question updated", back: "Target answer updated" })
+    .eq("id", fixtures.target.id)
+    .eq("updated_at", targetBefore.updated_at)
+    .select(snapshotColumns)
     .single();
-  assert(!ownerUpdateError && updatedCard?.front === "RLS owner question updated", "owner updates their card");
-  assert(updatedCard.updated_at !== insertedCard.updated_at, "owner update advances the card version");
+  assert(
+    !ownerUpdateError &&
+      updatedCard?.front === "Target question updated" &&
+      updatedCard.back === "Target answer updated",
+    "owner edits the target card's front and back",
+  );
+  assert(updatedCard.updated_at !== targetBefore.updated_at, "owner content edit advances the card version");
+  const expectedAfterOwnerUpdate = beforeOwnerUpdate.map((card) =>
+    card.id === fixtures.target.id
+      ? { ...card, front: updatedCard.front, back: updatedCard.back, updated_at: updatedCard.updated_at }
+      : card,
+  );
+  assertJsonEqual(
+    await ownerSnapshot(),
+    expectedAfterOwnerUpdate,
+    "owner edit changes only target content and its content version",
+  );
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { error: schedulerUpdateError } = await ownerClient
     .from("flashcards")
     .update({ due: new Date(0).toISOString() })
-    .eq("id", insertedCard.id);
+    .eq("id", fixtures.target.id);
   assert(Boolean(schedulerUpdateError), "owner cannot update scheduler columns through the ordinary client");
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "denied scheduler update leaves the complete owner state unchanged",
+  );
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { data: staleUpdated, error: staleUpdateError } = await ownerClient
     .from("flashcards")
     .update({ front: "Stale update must not land" })
-    .eq("id", insertedCard.id)
-    .eq("updated_at", insertedCard.updated_at)
+    .eq("id", fixtures.target.id)
+    .eq("updated_at", targetBefore.updated_at)
     .select("id");
   assert(!staleUpdateError && staleUpdated.length === 0, "stale owner update affects no rows");
+  await assertOwnerSnapshotUnchanged(beforeDeniedWrite, "stale owner update leaves the complete owner state unchanged");
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { data: staleDeleted, error: staleDeleteError } = await ownerClient
     .from("flashcards")
     .delete()
-    .eq("id", insertedCard.id)
-    .eq("updated_at", insertedCard.updated_at)
+    .eq("id", fixtures.target.id)
+    .eq("updated_at", targetBefore.updated_at)
     .select("id");
   assert(!staleDeleteError && staleDeleted.length === 0, "stale owner delete affects no rows");
+  await assertOwnerSnapshotUnchanged(beforeDeniedWrite, "stale owner delete leaves the complete owner state unchanged");
 
-  const { data: currentCard, error: currentCardError } = await ownerClient
-    .from("flashcards")
-    .select("id, front, updated_at")
-    .eq("id", insertedCard.id)
-    .single();
-  assert(
-    !currentCardError &&
-      currentCard?.front === "RLS owner question updated" &&
-      currentCard.updated_at === updatedCard.updated_at,
-    "stale mutations leave the current owner version intact",
-  );
-
+  beforeDeniedWrite = await ownerSnapshot();
   const { data: otherConditionallyUpdated, error: otherConditionalUpdateError } = await otherClient
     .from("flashcards")
     .update({ front: "Cross-account conditional update" })
-    .eq("id", insertedCard.id)
+    .eq("id", fixtures.target.id)
     .eq("updated_at", updatedCard.updated_at)
     .select("id");
   assert(
     !otherConditionalUpdateError && otherConditionallyUpdated.length === 0,
     "second user cannot conditionally update the owner's current version",
   );
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "cross-account conditional update leaves the complete owner state unchanged",
+  );
 
+  beforeDeniedWrite = await ownerSnapshot();
   const { data: otherConditionallyDeleted, error: otherConditionalDeleteError } = await otherClient
     .from("flashcards")
     .delete()
-    .eq("id", insertedCard.id)
+    .eq("id", fixtures.target.id)
     .eq("updated_at", updatedCard.updated_at)
     .select("id");
   assert(
     !otherConditionalDeleteError && otherConditionallyDeleted.length === 0,
     "second user cannot conditionally delete the owner's current version",
   );
+  await assertOwnerSnapshotUnchanged(
+    beforeDeniedWrite,
+    "cross-account conditional delete leaves the complete owner state unchanged",
+  );
 
+  const { data: approvedRows, error: approvedInsertError } = await ownerClient
+    .from("flashcards")
+    .insert(fixtures.approved)
+    .select("id, user_id, front, back")
+    .order("id");
+  assert(!approvedInsertError && approvedRows.length === fixtures.approved.length, "approved set inserts in one batch");
+
+  const selectedIds = [...fixtures.approved.map(({ id }) => id), fixtures.sentinelId];
+  const { data: durableApprovedRows, error: durableApprovedError } = await ownerClient
+    .from("flashcards")
+    .select("id, user_id, front, back")
+    .in("id", selectedIds)
+    .order("id");
+  const expectedApprovedRows = fixtures.approved.map((card) => ({
+    id: card.id,
+    user_id: ownerId,
+    front: card.front,
+    back: card.back,
+  }));
+  assert(
+    !durableApprovedError && JSON.stringify(durableApprovedRows) === JSON.stringify(expectedApprovedRows),
+    "independent read contains exactly the submitted approved ID/content/owner set and excludes the sentinel",
+  );
+
+  const beforeAtomicConflict = await ownerSnapshot();
+  const { error: atomicConflictError } = await ownerClient
+    .from("flashcards")
+    .insert([fixtures.atomicNovel, { ...fixtures.approved[0], front: "Conflicting overwrite must not land" }]);
+  assert(Boolean(atomicConflictError), "mixed novel/conflicting insert reports a primary-key conflict");
+  await assertOwnerSnapshotUnchanged(
+    beforeAtomicConflict,
+    "conflicting multi-row insert preserves the complete pre-existing owner snapshot byte-for-byte",
+  );
+  const { data: novelRows, error: novelReadError } = await ownerClient
+    .from("flashcards")
+    .select("id")
+    .eq("id", fixtures.atomicNovel.id);
+  assert(!novelReadError && novelRows.length === 0, "conflicting multi-row insert persists no novel partial row");
+
+  const beforeOwnerDelete = await ownerSnapshot();
   const { data: deletedCard, error: ownerDeleteError } = await ownerClient
     .from("flashcards")
     .delete()
-    .eq("id", insertedCard.id)
+    .eq("id", fixtures.target.id)
     .eq("updated_at", updatedCard.updated_at)
     .select("id")
     .single();
-  assert(!ownerDeleteError && deletedCard?.id === insertedCard.id, "owner deletes their card");
+  assert(!ownerDeleteError && deletedCard?.id === fixtures.target.id, "owner deletes the selected target card");
+  const expectedAfterDelete = beforeOwnerDelete.filter((card) => card.id !== fixtures.target.id);
+  const afterOwnerDelete = await ownerSnapshot();
+  assertJsonEqual(afterOwnerDelete, expectedAfterDelete, "owner deletion removes exactly the selected target row");
+  assertJsonEqual(
+    afterOwnerDelete.find((card) => card.id === fixtures.decoy.id),
+    decoyBefore,
+    "owner deletion leaves the decoy row byte-for-byte unchanged",
+  );
 
-  const { data: removedCard, error: removedCardError } = await ownerClient
-    .from("flashcards")
-    .select("id")
-    .eq("id", insertedCard.id);
-  assert(!removedCardError && removedCard.length === 0, "owner deletion removes the selected target");
-
-  console.log("Flashcard RLS verification passed. Run `npm run db:reset` to remove transient test users.");
+  console.log("Flashcard RLS verification passed. Cleanup: run `npm run db:reset` to remove transient users and rows.");
 }
 
 main().catch((error) => {
