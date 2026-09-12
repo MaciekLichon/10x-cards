@@ -303,26 +303,26 @@ the verifier's local reset/cleanup workflow.
 
 #### Automated
 
-- [x] 1.1 Local Supabase reset, migrations, pgTAP, and the strengthened verifier pass
-- [x] 1.2 The verifier proves immediate owner-state equality after denied writes and exact target/decoy invariants
+- [x] 1.1 Local Supabase reset, migrations, pgTAP, and the strengthened verifier pass — 13fb601
+- [x] 1.2 The verifier proves immediate owner-state equality after denied writes and exact target/decoy invariants — 13fb601
 
 #### Manual
 
-- [x] 1.3 Verifier output is reviewed for named PASS lines and non-zero-row assertions
-- [x] 1.4 The run is confirmed against an isolated local stack with clear cleanup instructions
+- [x] 1.3 Verifier output is reviewed for named PASS lines and non-zero-row assertions — 13fb601
+- [x] 1.4 The run is confirmed against an isolated local stack with clear cleanup instructions — 13fb601
 
 ### Phase 2: Add Direct API Integration Contracts
 
 #### Automated
 
-- [ ] 2.1 New batch-save, collection, and mutation handler suites pass
-- [ ] 2.2 Handler suites retain real parsing, origin, authentication, reconciliation, and response behavior
-- [ ] 2.3 Full application tests pass
+- [x] 2.1 New batch-save, collection, and mutation handler suites pass
+- [x] 2.2 Handler suites retain real parsing, origin, authentication, reconciliation, and response behavior
+- [x] 2.3 Full application tests pass
 
 #### Manual
 
-- [ ] 2.4 Representative fixtures are reviewed for expected rows independent of production helper calculations
-- [ ] 2.5 Ambiguous-path assertions are confirmed to reject any second mutation call
+- [x] 2.4 Representative fixtures are reviewed for expected rows independent of production helper calculations
+- [x] 2.5 Ambiguous-path assertions are confirmed to reject any second mutation call
 
 ### Phase 3: Add Focused React Recovery Coverage
 
