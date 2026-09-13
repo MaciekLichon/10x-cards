@@ -153,13 +153,13 @@ function adminClient(
     },
     error: null,
   };
-  const rpc = vi.fn(() =>
+  const rpc = vi.fn((_functionName: string, _arguments: unknown) =>
     options.rpc instanceof Error ? Promise.reject(options.rpc) : Promise.resolve(options.rpc ?? defaultRpc),
   );
   return { client: { from, rpc }, from, rpc };
 }
 
-function request(
+async function request(
   body: string | object = INPUT,
   options: { authenticated?: boolean; contentType?: string; origin?: string } = {},
 ): Promise<Response> {
@@ -382,8 +382,10 @@ describe("POST /api/review/rate", () => {
     ["failed replay lookup", { replayLookupFailure: true }],
     ["thrown RPC transport", { rpcFailure: true }],
   ])("maps %s to an ambiguous response", async (_label, mode) => {
-    const fake = adminClient({ rpc: mode.rpcFailure ? new Error("connection lost") : undefined });
-    if (mode.replayLookupFailure) {
+    const fake = adminClient({
+      rpc: "rpcFailure" in mode && mode.rpcFailure ? new Error("connection lost") : undefined,
+    });
+    if ("replayLookupFailure" in mode && mode.replayLookupFailure) {
       fake.client.from = vi.fn(() => {
         throw new Error("lookup failed");
       });

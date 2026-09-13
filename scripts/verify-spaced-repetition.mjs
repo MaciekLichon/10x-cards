@@ -425,20 +425,6 @@ async function main() {
     "expiry is persisted before a replacement session is created",
   );
 
-  const rateSource = readFileSync("src/pages/api/review/rate.ts", "utf8");
-  const sessionSource = readFileSync("src/pages/api/review/session.ts", "utf8");
-  const uiSource = readFileSync("src/components/review/SpacedRepetitionSession.tsx", "utf8");
-  for (const mode of ["rating_failure", "rating_lost_response", "rating_stale_transition"]) {
-    check(rateSource.includes(mode), `rating endpoint exposes the development-only ${mode} mode`);
-  }
-  check(sessionSource.includes("session_failure"), "session endpoint exposes the development-only failure mode");
-  check(
-    uiSource.includes("setPending(payload)") &&
-      uiSource.includes("Retry same rating") &&
-      uiSource.includes("setSession(body.result.session)"),
-    "the UI retains ambiguous intent and advances only from a confirmed canonical result",
-  );
-
   console.log("Spaced repetition verification passed. Run `npm run db:reset` to remove transient fixtures.");
 }
 

@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-09-06
+> Last updated: 2026-09-13
 
 ## 1. Strategy
 
@@ -56,7 +56,8 @@ Expected outcomes come from requirements and independent fixtures, never product
 |---|---|---|---|---|---|---|
 | 1 | AI generation validity | Reject unusable output, recover cleanly, assess source fidelity | #1, #2 | Contract/integration; human rubric; selective AI review | complete | context/changes/testing-ai-generation-validity/ |
 | 2 | Collection persistence and ownership | Preserve selected cards and isolate reads/mutations | #3, #4, #6 | Database + API integration | complete | context/changes/testing-collection-persistence-and-ownership/ |
-| 3 | Review continuity and critical journey | Preserve progress, respect due dates, prove browser crossings | #5; journey across #1/#3/#4 | Integration + minimal e2e | not started | — |
+| 3 | Review continuity | Preserve progress and respect due dates | #5 | Integration | planned | context/changes/testing-review-continuity/ |
+| 4 | Critical browser journey | Prove auth, generation, persistence, and ownership crossings in the browser | Journey across #1/#3/#4 | Minimal e2e | not started | — |
 
 Phase 1 adds only necessary runner setup. Reuse existing checks. Each phase ends by updating §6. Status vocabulary: `not started`, `change opened`, `researched`, `planned`, `implementing`, `complete`.
 
@@ -68,7 +69,7 @@ Phase 1 adds only necessary runner setup. Reuse existing checks. Each phase ends
 |---|---|---|---|
 | Contract/integration | Vitest candidate | Select in Phase 1 | Astro rendering requires server environment; checked: 2026-09-06 |
 | Database | Supabase CLI / pgTAP | CLI ^2.23.4 declared | Existing `db:test`; checked: 2026-09-06 |
-| Browser | Playwright candidate | Select in Phase 3 | Only browser-specific signal; checked: 2026-09-06 |
+| Browser | Playwright candidate | Select in Phase 4 | Only browser-specific signal; checked: 2026-09-06 |
 | AI-assisted quality | Human-calibrated rubric review | No tool selected | Phase 1 feasibility check. When NOT to use: deterministic format checks, cheap human review, or uncalibrated judgments; checked: 2026-09-06 |
 
 **Stack grounding tools (current session), checked: 2026-09-06:**
@@ -85,7 +86,8 @@ Phase 1 adds only necessary runner setup. Reuse existing checks. Each phase ends
 | Generation contract/integration | Local | Required after Phase 1 | #1 |
 | Source-fidelity rubric | Local, selective | Manual sample check after Phase 1; AI advisory | #2 |
 | Persistence/ownership integration | Local | Required after Phase 2 | #3/#4/#6 |
-| Review integration + critical e2e | Local | Required after Phase 3 | #5 and browser crossings |
+| Review integration | Local | Required after Phase 3 | #5 |
+| Critical e2e | Local | Required after Phase 4 | Browser crossings across #1/#3/#4 |
 
 Repository rules also require sync, lint and build before PRs. The documented GitHub Actions workflow is absent; external enforcement is unverified. No CI gate is claimed. CI wiring, configuration testing and infrastructure investment are excluded by interview Q5; changing that requires explicit rescoping.
 
@@ -180,11 +182,42 @@ Astro middleware behavior.
 
 ### 6.5 Review progress and due selection
 
-TBD — see §3 Phase 3. Record deterministic fixtures, time policy, reference test and run command. Existing inventory: `supabase/tests/database/spaced_repetition.test.sql`, `scripts/verify-fsrs-scheduler.mjs`, `scripts/verify-spaced-repetition.mjs`; research must verify actual coverage.
+Use five complementary references. `tests/integration/review/fsrs.test.ts` fixes the application-owned `ts-fsrs` adapter
+to literal outputs for ratings 1–4 and a second transition. `tests/integration/review/rate.test.ts` exercises the direct
+Astro handler with the real scheduler in its core path and narrow mocked persistence/session seams.
+`tests/integration/review/SpacedRepetitionSession.test.tsx` proves confirmed-only visible progress, byte-equivalent retry
+intent, conflict reconciliation, and due-time reload triggers. `supabase/tests/database/spaced_repetition.test.sql` owns
+literal due, 60-second wait, 24-hour expiry, transaction, and function-order contracts. Finally,
+`scripts/verify-spaced-repetition.mjs` exercises ordinary-client isolation plus concurrent rating calls through local
+PostgREST and inspects exact durable state.
+
+Keep scheduler inputs, expected post-state, timestamps, UUIDs, and boundary values literal and independent from production
+calculation helpers. Freeze application time at the owning layer. For one stable rating intent, concurrent calls must yield
+one applied result, one canonical replay, one schedule/member/session increment, and one log. The bounded concurrent
+verifier is practical scheduling evidence; the pgTAP function-definition assertion separately protects that the
+request-scoped advisory lock precedes replay lookup.
+
+The database gate requires an isolated, resettable local Supabase stack; loopback `SUPABASE_URL`, `SUPABASE_KEY`, and
+`SUPABASE_SERVICE_ROLE_KEY` must be available through `.env` or `.dev.vars`. Reset before and after the verifier so its
+temporary users and rows do not survive. Run:
+
+```bash
+npm run test -- tests/integration/review/fsrs.test.ts tests/integration/review/rate.test.ts tests/integration/review/SpacedRepetitionSession.test.tsx
+npm run test && npm run verify:fsrs
+npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check && npm run verify:spaced-repetition && npm run db:reset
+npm run deploy:check
+```
+
+Claim boundaries are strict. The scheduler suite proves deterministic adapter mapping, not vendor internals. Direct-handler
+tests mock the admin/session seams and therefore do not prove RLS, durability, cookies, middleware, or deployed routing.
+The React suite uses jsdom and mocked fetch, so it proves component reconciliation but not real networking, hydration,
+focus, cross-page behavior, authentication, or database state. pgTAP proves privileged database contracts, while the
+ordinary-client verifier proves local PostgREST/RLS and durable behavior; neither proves the browser journey. Authentication
+cookies, middleware, hydration, routing, and full user journeys remain Phase 4.
 
 ### 6.6 Critical browser journey
 
-TBD — see §3 Phase 3. Record minimal auth/cookie/UI crossings that cheaper tests cannot prove, test location, naming, canonical reference, fixture isolation and run command. Stub AI responses for deterministic journey tests.
+TBD — see §3 Phase 4. Record minimal auth/cookie/UI crossings that cheaper tests cannot prove, test location, naming, canonical reference, fixture isolation and run command. Stub AI responses for deterministic journey tests.
 
 ## 7. What We Deliberately Don't Test
 

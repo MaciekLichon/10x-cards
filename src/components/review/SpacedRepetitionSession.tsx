@@ -20,7 +20,7 @@ export default function SpacedRepetitionSession() {
   const [now, setNow] = useState(0);
   const generation = useRef(0);
 
-  const load = useCallback(async (reconciling = false) => {
+  const load = useCallback(async (reconciling = false): Promise<boolean> => {
     const requestGeneration = ++generation.current;
     setView(reconciling ? "reconciling" : "loading");
     setError(undefined);
@@ -29,15 +29,17 @@ export default function SpacedRepetitionSession() {
       const body: ApiBody = await response.json();
       if (!response.ok || !body.session)
         throw new Error(body.error?.message ?? "Your review session could not be loaded.");
-      if (requestGeneration !== generation.current) return;
+      if (requestGeneration !== generation.current) return false;
       setSession(body.session);
       setPending(undefined);
       setNow(Date.now());
       setView("ready");
+      return true;
     } catch (caught) {
-      if (requestGeneration !== generation.current) return;
+      if (requestGeneration !== generation.current) return false;
       setError(caught instanceof Error ? caught.message : "Your review session could not be loaded.");
       setView("failed");
+      return false;
     }
   }, []);
 
@@ -107,10 +109,14 @@ export default function SpacedRepetitionSession() {
           setView("ready");
         } else if (response.status === 409) {
           setPending(undefined);
-          if (body.session) setSession(body.session);
-          else await load(true);
+          if (body.session) {
+            setSession(body.session);
+            setNow(Date.now());
+            setView("ready");
+          } else if (!(await load(true))) {
+            return;
+          }
           setNotice("Progress changed in another tab. The latest session has been restored.");
-          setView("ready");
         } else if (response.status >= 500 || body.error?.code === "review_ambiguous") {
           setPending(payload);
           setError("The rating result is uncertain. Retry to reconcile the same rating safely.");
@@ -130,7 +136,7 @@ export default function SpacedRepetitionSession() {
   );
 
   function rate(rating: ReviewRating) {
-    if (!session || !currentCard || view === "submitting") return;
+    if (!session || !currentCard || view !== "ready") return;
     const payload = {
       requestId: crypto.randomUUID(),
       sessionId: session.id,
@@ -234,7 +240,7 @@ export default function SpacedRepetitionSession() {
         <ReviewCard
           key={`${currentCard.id}-${currentCard.reviewCount}`}
           card={currentCard}
-          busy={view === "submitting" || Boolean(pending)}
+          busy={view !== "ready" || Boolean(pending)}
           onRate={rate}
         />
       ) : waitingCard ? (

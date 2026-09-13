@@ -323,19 +323,19 @@ problem appears; reverting to the old function would deliberately restore the kn
 
 #### Automated
 
-- [x] 2.1 Focused scheduler and handler suites pass
-- [x] 2.2 Existing scheduler smoke evidence remains green
-- [x] 2.3 Complete Vitest suite and type-aware lint pass
+- [x] 2.1 Focused scheduler and handler suites pass — e385653
+- [x] 2.2 Existing scheduler smoke evidence remains green — e385653
+- [x] 2.3 Complete Vitest suite and type-aware lint pass — e385653
 
 ### Phase 3: React Continuity and Rollout Completion
 
 #### Automated
 
-- [ ] 3.1 React continuity suite passes
-- [ ] 3.2 All deterministic application and scheduler tests pass
-- [ ] 3.3 Complete local database gate and runtime verifier pass with reset cleanup
-- [ ] 3.4 Repository deployment check passes
+- [x] 3.1 React continuity suite passes
+- [x] 3.2 All deterministic application and scheduler tests pass
+- [x] 3.3 Complete local database gate and runtime verifier pass with reset cleanup
+- [x] 3.4 Repository deployment check passes
 
 #### Manual
 
-- [ ] 3.5 Human confirms cookbook references, commands, and Phase 4 claim boundary
+- [x] 3.5 Human confirms cookbook references, commands, and Phase 4 claim boundary
