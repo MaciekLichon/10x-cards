@@ -396,28 +396,28 @@ discarded locally once the fixture no longer consumes `playwright/.auth/auth.jso
 
 #### Automated
 
-- [x] 1.1 Playwright discovers the seed under Chromium
-- [x] 1.2 Reset-based seed run passes and cleans fixture state
-- [x] 1.3 Astro synchronization, lint, checking, and production build pass
+- [x] 1.1 Playwright discovers the seed under Chromium — 4ebaa74
+- [x] 1.2 Reset-based seed run passes and cleans fixture state — 4ebaa74
+- [x] 1.3 Astro synchronization, lint, checking, and production build pass — 4ebaa74
 
 #### Manual
 
-- [x] 1.4 Non-loopback Supabase provisioning is refused
-- [x] 1.5 Credentials and generated artifacts remain untracked
-- [x] 1.6 Seed demonstrates accessible, isolated, state-driven patterns
+- [x] 1.4 Non-loopback Supabase provisioning is refused — 4ebaa74
+- [x] 1.5 Credentials and generated artifacts remain untracked — 4ebaa74
+- [x] 1.6 Seed demonstrates accessible, isolated, state-driven patterns — 4ebaa74
 
 ### Phase 2: Risk #1 — Invalid Generation Recovery
 
 #### Automated
 
-- [ ] 2.1 Risk #1 spec passes independently
-- [ ] 2.2 Deliberate recovery break makes the spec fail and reverting restores green
-- [ ] 2.3 Existing generation integration tests remain green
+- [x] 2.1 Risk #1 spec passes independently
+- [x] 2.2 Deliberate recovery break makes the spec fail and reverting restores green
+- [x] 2.3 Existing generation integration tests remain green
 
 #### Manual
 
-- [ ] 2.4 Rendered generation recovery is understandable
-- [ ] 2.5 Spec claims only the browser recovery boundary it proves
+- [x] 2.4 Rendered generation recovery is understandable
+- [x] 2.5 Spec claims only the browser recovery boundary it proves
 
 ### Phase 3: Risk #3 — Selected-Card Failure Recovery and Durability
 
