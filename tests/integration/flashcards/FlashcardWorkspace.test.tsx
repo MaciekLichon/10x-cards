@@ -17,6 +17,11 @@ const FIRST_PROPOSALS: FlashcardProposal[] = [
 const REPLACEMENT_PROPOSALS: FlashcardProposal[] = [
   { question: "What replaces the old set?", answer: "A successful retry." },
 ];
+const REVIEWED_PROPOSALS: FlashcardProposal[] = [
+  { question: "Which accepted card should persist?", answer: "Only this edited card." },
+  { question: "Which rejected card stays visible?", answer: "This rejected card." },
+  { question: "Which invalid accepted card stays visible?", answer: "This card becomes invalid." },
+];
 
 interface Deferred<T> {
   promise: Promise<T>;
@@ -247,5 +252,79 @@ describe("FlashcardWorkspace generation recovery", () => {
     await generate(user);
     await screen.findByDisplayValue(normalSet[0].question);
     expect(screen.queryByRole("status")).toBeNull();
+  });
+});
+
+describe("FlashcardWorkspace persistence recovery", () => {
+  it("submits only accepted-valid edits and preserves the entire reviewed set after definitive failure", async () => {
+    const fetchMock = stubFetch(successResponse(REVIEWED_PROPOSALS), errorResponse("save_failed", 503));
+    const { user, source } = renderWorkspace();
+    setSource(source);
+
+    await generate(user);
+    const acceptedQuestion = await waitForQuestion(REVIEWED_PROPOSALS[0].question);
+    await user.clear(acceptedQuestion);
+    await user.type(acceptedQuestion, "Edited accepted question?");
+    await user.click(screen.getByRole("button", { name: "Reject card 2" }));
+    await user.clear(screen.getByDisplayValue(REVIEWED_PROPOSALS[2].question));
+    await user.click(screen.getByRole("button", { name: "Save selected" }));
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Your reviewed set is preserved");
+    const saveInit = fetchMock.mock.calls[1][1];
+    if (typeof saveInit?.body !== "string") throw new Error("Expected the save request body to be JSON text");
+    const saveBody = JSON.parse(saveInit.body) as {
+      proposals: { id: string; question: string; answer: string }[];
+    };
+    expect(saveBody.proposals).toHaveLength(1);
+    expect(typeof saveBody.proposals[0].id).toBe("string");
+    expect({ question: saveBody.proposals[0].question, answer: saveBody.proposals[0].answer }).toEqual({
+      question: "Edited accepted question?",
+      answer: REVIEWED_PROPOSALS[0].answer,
+    });
+    expect(source.value).toBe(VALID_SOURCE);
+    expect(screen.getByDisplayValue("Edited accepted question?")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Restore card 2" })).toBeTruthy();
+    expect(screen.getByDisplayValue(REVIEWED_PROPOSALS[1].answer)).toBeTruthy();
+    expect(screen.getByDisplayValue(REVIEWED_PROPOSALS[2].answer)).toBeTruthy();
+    expect(screen.getAllByRole<HTMLTextAreaElement>("textbox", { name: "Question" })[2].value).toBe("");
+  });
+
+  it("uses one read-only reconciliation after an ambiguous save without replaying the insert", async () => {
+    const fetchMock = stubFetch(
+      successResponse(REPLACEMENT_PROPOSALS),
+      new Error("response lost"),
+      errorResponse("save_ambiguous", 503),
+    );
+    const { user, source } = renderWorkspace();
+    setSource(source);
+
+    await generate(user);
+    await waitForQuestion(REPLACEMENT_PROPOSALS[0].question);
+    await user.click(screen.getByRole("button", { name: "Save selected" }));
+
+    expect((await screen.findByRole("alert")).textContent).toContain("could not be confirmed");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    const saveCalls = fetchMock.mock.calls.slice(1).map(([, init]) => {
+      if (typeof init?.body !== "string") throw new Error("Expected a JSON save request");
+      return JSON.parse(init.body) as { proposals: unknown[]; reconcile?: boolean };
+    });
+    expect(saveCalls.map(({ reconcile }) => reconcile)).toEqual([undefined, true]);
+    expect(saveCalls.map(({ proposals }) => proposals.length)).toEqual([1, 1]);
+    expect(source.value).toBe(VALID_SOURCE);
+    expect(screen.getByDisplayValue(REPLACEMENT_PROPOSALS[0].question)).toBeTruthy();
+  });
+
+  it("reports the exact saved count and clears the source only after confirmed success", async () => {
+    stubFetch(successResponse(FIRST_PROPOSALS), Response.json({ savedCount: 2 }));
+    const { user, source } = renderWorkspace();
+    setSource(source);
+
+    await generate(user);
+    await waitForQuestion(FIRST_PROPOSALS[0].question);
+    await user.click(screen.getByRole("button", { name: "Save selected" }));
+
+    expect((await screen.findByText("2 cards were saved.")).textContent).toBe("2 cards were saved.");
+    expect(source.value).toBe("");
+    expect(screen.getByText("Success: 2 cards were saved.")).toBeTruthy();
   });
 });

@@ -315,27 +315,27 @@ the verifier's local reset/cleanup workflow.
 
 #### Automated
 
-- [x] 2.1 New batch-save, collection, and mutation handler suites pass
-- [x] 2.2 Handler suites retain real parsing, origin, authentication, reconciliation, and response behavior
-- [x] 2.3 Full application tests pass
+- [x] 2.1 New batch-save, collection, and mutation handler suites pass — b5a7d07
+- [x] 2.2 Handler suites retain real parsing, origin, authentication, reconciliation, and response behavior — b5a7d07
+- [x] 2.3 Full application tests pass — b5a7d07
 
 #### Manual
 
-- [x] 2.4 Representative fixtures are reviewed for expected rows independent of production helper calculations
-- [x] 2.5 Ambiguous-path assertions are confirmed to reject any second mutation call
+- [x] 2.4 Representative fixtures are reviewed for expected rows independent of production helper calculations — b5a7d07
+- [x] 2.5 Ambiguous-path assertions are confirmed to reject any second mutation call — b5a7d07
 
 ### Phase 3: Add Focused React Recovery Coverage
 
 #### Automated
 
-- [ ] 3.1 Focused workspace and collection React suites pass
-- [ ] 3.2 Full Vitest suite passes without network access
-- [ ] 3.3 Tests prove retained drafts/cards and no mutation replay
+- [x] 3.1 Focused workspace and collection React suites pass
+- [x] 3.2 Full Vitest suite passes without network access
+- [x] 3.3 Tests prove retained drafts/cards and no mutation replay
 
 #### Manual
 
-- [ ] 3.4 Local UI smoke scenarios cover save, edit, delete, and retry/reconciliation messaging
-- [ ] 3.5 Visible errors remain associated with the intended card and the decoy card is unaffected
+- [x] 3.4 Local UI smoke scenarios cover save, edit, delete, and retry/reconciliation messaging
+- [x] 3.5 Visible errors remain associated with the intended card and the decoy card is unaffected
 
 ### Phase 4: Run Gates and Complete the Cookbook Handoff
 

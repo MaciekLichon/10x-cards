@@ -3,7 +3,7 @@ change_id: testing-collection-persistence-and-ownership
 title: Testing collection persistence and ownership
 status: implementing
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-13
 archived_at: null
 ---
 
