@@ -31,3 +31,10 @@ supabase/.temp/
 
 # jetbrains setting folder
 .idea/
+
+# Playwright
+playwright/.auth/
+.playwright-cli/
+playwright-report/
+test-results/
+blob-report/

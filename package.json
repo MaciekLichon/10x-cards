@@ -9,6 +9,8 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -50,6 +52,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^9.29.0",
+    "@playwright/test": "^1.63.0",
     "@testing-library/dom": "10.4.1",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.7",
