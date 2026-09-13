@@ -328,24 +328,24 @@ the verifier's local reset/cleanup workflow.
 
 #### Automated
 
-- [x] 3.1 Focused workspace and collection React suites pass
-- [x] 3.2 Full Vitest suite passes without network access
-- [x] 3.3 Tests prove retained drafts/cards and no mutation replay
+- [x] 3.1 Focused workspace and collection React suites pass — cbace9b
+- [x] 3.2 Full Vitest suite passes without network access — cbace9b
+- [x] 3.3 Tests prove retained drafts/cards and no mutation replay — cbace9b
 
 #### Manual
 
-- [x] 3.4 Local UI smoke scenarios cover save, edit, delete, and retry/reconciliation messaging
-- [x] 3.5 Visible errors remain associated with the intended card and the decoy card is unaffected
+- [x] 3.4 Local UI smoke scenarios cover save, edit, delete, and retry/reconciliation messaging — cbace9b
+- [x] 3.5 Visible errors remain associated with the intended card and the decoy card is unaffected — cbace9b
 
 ### Phase 4: Run Gates and Complete the Cookbook Handoff
 
 #### Automated
 
-- [ ] 4.1 Database and RLS gates pass
-- [ ] 4.2 Application gates pass
-- [ ] 4.3 Cookbook entries identify canonical tests, commands, fixture isolation, and claim boundaries
+- [x] 4.1 Database and RLS gates pass
+- [x] 4.2 Application gates pass
+- [x] 4.3 Cookbook entries identify canonical tests, commands, fixture isolation, and claim boundaries
 
 #### Manual
 
-- [ ] 4.4 Final diff is reviewed for test-only scope, no secrets, no archive edits, and no frozen strategy changes
-- [ ] 4.5 Local manual smoke scenarios align with the automated evidence before phase completion
+- [x] 4.4 Final diff is reviewed for test-only scope, no secrets, no archive edits, and no frozen strategy changes
+- [x] 4.5 Local manual smoke scenarios align with the automated evidence before phase completion

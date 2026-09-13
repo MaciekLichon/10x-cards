@@ -23,7 +23,7 @@ interface DatabaseResult {
   status?: number;
 }
 
-function saveRequest(
+async function saveRequest(
   body: string | object = { proposals: PROPOSALS },
   options: { authenticated?: boolean; contentType?: string; origin?: string } = {},
 ): Promise<Response> {

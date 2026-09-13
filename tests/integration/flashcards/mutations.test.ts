@@ -24,7 +24,7 @@ interface DatabaseResult {
   status?: number;
 }
 
-function mutationRequest(
+async function mutationRequest(
   handler: Handler,
   body: string | object,
   options: {

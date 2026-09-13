@@ -54,8 +54,8 @@ Expected outcomes come from requirements and independent fixtures, never product
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | AI generation validity | Reject unusable output, recover cleanly, assess source fidelity | #1, #2 | Contract/integration; human rubric; selective AI review | change opened | context/changes/testing-ai-generation-validity/ |
-| 2 | Collection persistence and ownership | Preserve selected cards and isolate reads/mutations | #3, #4, #6 | Database + API integration | not started | — |
+| 1 | AI generation validity | Reject unusable output, recover cleanly, assess source fidelity | #1, #2 | Contract/integration; human rubric; selective AI review | complete | context/changes/testing-ai-generation-validity/ |
+| 2 | Collection persistence and ownership | Preserve selected cards and isolate reads/mutations | #3, #4, #6 | Database + API integration | change opened | context/changes/testing-collection-persistence-and-ownership/ |
 | 3 | Review continuity and critical journey | Preserve progress, respect due dates, prove browser crossings | #5; journey across #1/#3/#4 | Integration + minimal e2e | not started | — |
 
 Phase 1 adds only necessary runner setup. Reuse existing checks. Each phase ends by updating §6. Status vocabulary: `not started`, `change opened`, `researched`, `planned`, `implementing`, `complete`.
@@ -133,11 +133,50 @@ human review, or an uncalibrated judgment. No AI judge selected; checked: 2026-0
 
 ### 6.3 Accepted-card persistence and ownership
 
-TBD — see §3 Phase 2. Record canonical tests and commands for selection, durable saves, anonymous/other-account denial, and unchanged owner data after denied writes. Existing inventory: `supabase/tests/database/flashcards.test.sql`, `scripts/verify-flashcard-rls.mjs`; inspect before reusing, coverage not yet audited.
+Use three complementary references. `scripts/verify-flashcard-rls.mjs` is the canonical real-boundary check for exact
+durable rows, conflicting-batch atomicity, and owner/other-user/anonymous isolation. It runs as one reset-based scenario
+with two confirmed local users, deterministic UUIDs, literal expected rows, and complete owner snapshots before and after
+denied writes. `tests/integration/flashcards/save.test.ts` and
+`tests/integration/flashcards/collection.test.ts` are the canonical direct-handler references for batch/manual request
+shaping, validation envelopes, exact reconciliation, timestamp DTOs, and no insert replay. Selection and visible recovery
+belong to `tests/integration/flashcards/FlashcardWorkspace.test.tsx`, whose mixed reviewed fixture keeps edited accepted,
+rejected, and accepted-invalid proposals independent from production calculations.
+
+The real-boundary check requires an isolated local Supabase stack plus loopback `SUPABASE_URL` and `SUPABASE_KEY` in
+`.env` or `.dev.vars`. Reset before the run and again afterward to remove transient users and rows. Run:
+
+```bash
+npm run db:reset && npm run db:lint && npm run db:test && npm run db:types:check && npm run db:verify-rls
+npm run test -- tests/integration/flashcards/save.test.ts tests/integration/flashcards/collection.test.ts tests/integration/flashcards/FlashcardWorkspace.test.tsx
+```
+
+Claim boundaries are strict. The privileged pgTAP contract in `supabase/tests/database/flashcards.test.sql` proves schema,
+policy/grant shape, constraints, and database invariants, but not runtime RLS behavior. The ordinary-client verifier proves
+local PostgREST/RLS and durable-state behavior, but not Astro authentication, cookies, origin checks, or visible UI state.
+Direct-handler tests mock `@/lib/supabase` and therefore never prove RLS. The React suite proves selected-set shaping and
+visible recovery, but not database durability or authorization.
 
 ### 6.4 Collection mutations
 
-TBD — see §3 Phase 2. Record an integration reference proving target identity and observable failure handling for edit/delete, with independent expected state and run command.
+`tests/integration/flashcards/mutations.test.ts` is the canonical request-boundary reference for PATCH/DELETE validation,
+exact `id + updated_at` predicates, public DTOs, stale conflicts, non-disclosing missing/cross-owner responses, and
+ambiguous classification. `tests/integration/flashcards/FlashcardCollection.test.tsx` is the canonical visible-behavior
+reference for exact draft retention, target-scoped errors, target-only success, and read-only reconciliation without
+mutation replay. The durable target/decoy invariant remains in `scripts/verify-flashcard-rls.mjs`.
+
+Keep fixtures explicit: stable target and decoy UUIDs, literal versions and expected DTO timestamps, and queued fetch
+responses with the initial collection GET before each mutation. Expected state must be written independently rather than
+derived through production mapping or mutation helpers. Run:
+
+```bash
+npm run test -- tests/integration/flashcards/mutations.test.ts tests/integration/flashcards/FlashcardCollection.test.tsx
+npm run db:reset && npm run db:verify-rls
+```
+
+The mocked handler suite proves predicates and response classification, not ownership enforcement or RLS. The React suite
+proves which card and draft remain visible and that ambiguous writes are not replayed, not durable database state. Only the
+local ordinary-client verifier may support RLS and target/decoy durability claims; it does not prove browser, cookie, or
+Astro middleware behavior.
 
 ### 6.5 Review progress and due selection
 
