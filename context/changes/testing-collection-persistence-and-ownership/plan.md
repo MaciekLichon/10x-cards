@@ -341,11 +341,11 @@ the verifier's local reset/cleanup workflow.
 
 #### Automated
 
-- [x] 4.1 Database and RLS gates pass
-- [x] 4.2 Application gates pass
-- [x] 4.3 Cookbook entries identify canonical tests, commands, fixture isolation, and claim boundaries
+- [x] 4.1 Database and RLS gates pass — 32879bd
+- [x] 4.2 Application gates pass — 32879bd
+- [x] 4.3 Cookbook entries identify canonical tests, commands, fixture isolation, and claim boundaries — 32879bd
 
 #### Manual
 
-- [x] 4.4 Final diff is reviewed for test-only scope, no secrets, no archive edits, and no frozen strategy changes
-- [x] 4.5 Local manual smoke scenarios align with the automated evidence before phase completion
+- [x] 4.4 Final diff is reviewed for test-only scope, no secrets, no archive edits, and no frozen strategy changes — 32879bd
+- [x] 4.5 Local manual smoke scenarios align with the automated evidence before phase completion — 32879bd
