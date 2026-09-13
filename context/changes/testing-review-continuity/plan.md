@@ -315,17 +315,17 @@ problem appears; reverting to the old function would deliberately restore the kn
 
 #### Automated
 
-- [x] 1.1 Forward migration and boundary contracts pass
-- [x] 1.2 Concurrent rating verification proves one durable application and canonical replay
-- [x] 1.3 Unchanged RPC schema matches generated types
+- [x] 1.1 Forward migration and boundary contracts pass — 6cd30df
+- [x] 1.2 Concurrent rating verification proves one durable application and canonical replay — 6cd30df
+- [x] 1.3 Unchanged RPC schema matches generated types — 6cd30df
 
 ### Phase 2: Scheduler and Rating-Handler Integration
 
 #### Automated
 
-- [ ] 2.1 Focused scheduler and handler suites pass
-- [ ] 2.2 Existing scheduler smoke evidence remains green
-- [ ] 2.3 Complete Vitest suite and type-aware lint pass
+- [x] 2.1 Focused scheduler and handler suites pass
+- [x] 2.2 Existing scheduler smoke evidence remains green
+- [x] 2.3 Complete Vitest suite and type-aware lint pass
 
 ### Phase 3: React Continuity and Rollout Completion
 
