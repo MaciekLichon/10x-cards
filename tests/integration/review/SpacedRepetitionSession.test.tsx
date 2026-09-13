@@ -135,6 +135,11 @@ async function submitGoodRating(user: ReturnType<typeof userEvent.setup>): Promi
   await user.click(screen.getByRole("button", { name: /Good/ }));
 }
 
+function dispatchBackgroundRefresh(eventName: "online" | "visibilitychange"): void {
+  const target = eventName === "online" ? window : document;
+  target.dispatchEvent(new Event(eventName));
+}
+
 afterEach(() => {
   vi.useRealTimers();
 });
@@ -158,6 +163,24 @@ describe("SpacedRepetitionSession continuity", () => {
     expect(screen.getByText("1 of 2 remaining")).toBeTruthy();
     expect(screen.getByText("Good saved. Progress confirmed.")).toBeTruthy();
   });
+
+  it.each(["online", "visibilitychange"] as const)(
+    "ignores an %s refresh while a rating request is still submitting",
+    async (eventName) => {
+      const ratingPending = deferred<Response>();
+      const fetchMock = stubFetch(sessionResponse(INITIAL_SESSION), ratingPending.promise);
+      const user = await renderReadySession(fetchMock);
+
+      await submitGoodRating(user);
+      dispatchBackgroundRefresh(eventName);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(screen.getByRole("status").textContent).toContain("Saving your rating");
+
+      ratingPending.resolve(ratingResponse());
+      expect(await screen.findByText(SECOND_CARD.front)).toBeTruthy();
+    },
+  );
 
   it.each([
     ["ambiguous server response", errorResponse(503, "review_ambiguous")],
@@ -185,6 +208,30 @@ describe("SpacedRepetitionSession continuity", () => {
       expectedScheduleVersion: 0,
     });
   });
+
+  it.each(["online", "visibilitychange"] as const)(
+    "ignores an %s refresh while an ambiguous rating awaits retry",
+    async (eventName) => {
+      const fetchMock = stubFetch(
+        sessionResponse(INITIAL_SESSION),
+        errorResponse(503, "review_ambiguous"),
+        ratingResponse(),
+      );
+      const user = await renderReadySession(fetchMock);
+
+      await submitGoodRating(user);
+      const retry = await screen.findByRole("button", { name: "Retry same rating" });
+      const firstRatingBody = fetchMock.mock.calls[1]?.[1]?.body;
+      dispatchBackgroundRefresh(eventName);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(screen.getByRole("button", { name: "Retry same rating" })).toBeTruthy();
+
+      await user.click(retry);
+      expect(await screen.findByText(SECOND_CARD.front)).toBeTruthy();
+      expect(fetchMock.mock.calls[2]?.[1]?.body).toBe(firstRatingBody);
+    },
+  );
 
   it("installs an authoritative session embedded in a 409 response without reloading", async () => {
     const fetchMock = stubFetch(sessionResponse(INITIAL_SESSION), conflictResponse(CONFIRMED_SESSION));

@@ -80,7 +80,8 @@ export default function SpacedRepetitionSession() {
 
   useEffect(() => {
     function refreshWhenActive() {
-      if (document.visibilityState === "visible" && session?.status === "active") void load(true);
+      if (document.visibilityState === "visible" && session?.status === "active" && view === "ready" && !pending)
+        void load(true);
     }
     document.addEventListener("visibilitychange", refreshWhenActive);
     window.addEventListener("online", refreshWhenActive);
@@ -88,7 +89,7 @@ export default function SpacedRepetitionSession() {
       document.removeEventListener("visibilitychange", refreshWhenActive);
       window.removeEventListener("online", refreshWhenActive);
     };
-  }, [load, session?.status]);
+  }, [load, pending, session?.status, view]);
 
   const send = useCallback(
     async (payload: RateReviewInput) => {
