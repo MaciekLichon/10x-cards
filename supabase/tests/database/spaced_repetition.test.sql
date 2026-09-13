@@ -1,6 +1,6 @@
 begin;
 
-select plan(50);
+select plan(57);
 
 select has_table('public', 'flashcard_review_sessions', 'review sessions table exists');
 select has_table('public', 'flashcard_review_session_cards', 'normalized session membership table exists');
@@ -81,10 +81,29 @@ select ok(
   'service role can apply reviews'
 );
 
+select ok(
+  (
+    select position('pg_advisory_xact_lock' in function_definition) > 0
+      and position('pg_advisory_xact_lock' in function_definition)
+        < position('from public.flashcard_review_logs' in function_definition)
+    from (
+      select lower(
+        pg_get_functiondef(
+          'public.apply_flashcard_review(uuid,uuid,uuid,uuid,smallint,bigint,timestamptz,jsonb,jsonb)'::regprocedure
+        )
+      ) as function_definition
+    ) as review_function
+  ),
+  'request advisory lock is acquired before replay-log lookup'
+);
+
 insert into auth.users (id, aud, role, email) values
   ('10000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', 'review-owner@example.test'),
   ('20000000-0000-0000-0000-000000000002', 'authenticated', 'authenticated', 'review-other@example.test'),
-  ('30000000-0000-0000-0000-000000000003', 'authenticated', 'authenticated', 'review-empty@example.test');
+  ('30000000-0000-0000-0000-000000000003', 'authenticated', 'authenticated', 'review-empty@example.test'),
+  ('40000000-0000-0000-0000-000000000004', 'authenticated', 'authenticated', 'review-due-boundary@example.test'),
+  ('50000000-0000-0000-0000-000000000005', 'authenticated', 'authenticated', 'review-wait-boundary@example.test'),
+  ('60000000-0000-0000-0000-000000000006', 'authenticated', 'authenticated', 'review-expiry-boundary@example.test');
 
 create temporary table empty_session as
 select public.get_or_create_review_session(
@@ -115,6 +134,122 @@ select isnt(
   ) ->> 'id',
   (select value ->> 'id' from empty_session),
   'a card created after an empty session is admitted to a new session'
+);
+
+insert into public.flashcards (id, user_id, front, back, created_at, due)
+values (
+  '44000000-0000-0000-0000-000000000004',
+  '40000000-0000-0000-0000-000000000004',
+  'Due boundary',
+  'Answer',
+  '2026-09-03 11:00:00+00',
+  '2026-09-03 12:00:00+00'
+);
+
+create temporary table due_before_session as
+select public.get_or_create_review_session(
+  '40000000-0000-0000-0000-000000000004',
+  '2026-09-03 11:59:59.999+00'
+) as value;
+
+select is(
+  (select count(*) from public.flashcard_review_session_cards where user_id = '40000000-0000-0000-0000-000000000004'),
+  0::bigint,
+  'a future card is excluded one millisecond before its due instant'
+);
+
+create temporary table due_equal_session as
+select public.get_or_create_review_session(
+  '40000000-0000-0000-0000-000000000004',
+  '2026-09-03 12:00:00+00'
+) as value;
+
+select is(
+  (select count(*) from public.flashcard_review_session_cards where user_id = '40000000-0000-0000-0000-000000000004'),
+  1::bigint,
+  'a card is admitted when its due instant equals the cutoff'
+);
+
+insert into public.flashcards (id, user_id, front, back, created_at, due) values
+  ('55000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000005', 'Wait boundary', 'Answer', '2026-09-03 09:00:00+00', '2026-09-03 10:00:00+00'),
+  ('55000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-000000000005', 'Defer boundary', 'Answer', '2026-09-03 09:00:00+00', '2026-09-03 10:00:01+00');
+
+create temporary table wait_boundary_session as
+select public.get_or_create_review_session(
+  '50000000-0000-0000-0000-000000000005',
+  '2026-09-03 11:00:00+00'
+) as value;
+
+select public.apply_flashcard_review(
+  '50000000-0000-0000-0000-000000000005',
+  (select (value ->> 'id')::uuid from wait_boundary_session),
+  '65000000-0000-0000-0000-000000000001',
+  '55000000-0000-0000-0000-000000000001',
+  3::smallint,
+  0::bigint,
+  '2026-09-03 11:00:00+00',
+  '{"due":"2026-09-03T11:01:00Z","stability":1,"difficulty":5,"elapsed_days":0,"scheduled_days":0,"learning_steps":0,"reps":1,"lapses":0,"state":1}'::jsonb,
+  '{}'::jsonb
+);
+
+select is(
+  (select state from public.flashcard_review_session_cards where flashcard_id = '55000000-0000-0000-0000-000000000001'),
+  'waiting',
+  'a post-review due time exactly 60 seconds ahead remains waiting'
+);
+
+select public.apply_flashcard_review(
+  '50000000-0000-0000-0000-000000000005',
+  (select (value ->> 'id')::uuid from wait_boundary_session),
+  '65000000-0000-0000-0000-000000000002',
+  '55000000-0000-0000-0000-000000000002',
+  3::smallint,
+  0::bigint,
+  '2026-09-03 11:00:00+00',
+  '{"due":"2026-09-03T11:01:00.001Z","stability":1,"difficulty":5,"elapsed_days":0,"scheduled_days":0,"learning_steps":0,"reps":1,"lapses":0,"state":1}'::jsonb,
+  '{}'::jsonb
+);
+
+select is(
+  (select state from public.flashcard_review_session_cards where flashcard_id = '55000000-0000-0000-0000-000000000002'),
+  'deferred',
+  'a post-review due time one millisecond beyond 60 seconds is deferred'
+);
+
+delete from public.flashcard_review_logs where user_id = '50000000-0000-0000-0000-000000000005';
+
+insert into public.flashcards (id, user_id, front, back, created_at, due)
+values (
+  '66000000-0000-0000-0000-000000000006',
+  '60000000-0000-0000-0000-000000000006',
+  'Expiry boundary',
+  'Answer',
+  '2026-09-03 09:00:00+00',
+  '2026-09-03 10:00:00+00'
+);
+
+create temporary table expiry_boundary_session as
+select public.get_or_create_review_session(
+  '60000000-0000-0000-0000-000000000006',
+  '2026-09-03 10:00:00+00'
+) as value;
+
+select is(
+  public.get_or_create_review_session(
+    '60000000-0000-0000-0000-000000000006',
+    '2026-09-04 09:59:59.999+00'
+  ) ->> 'id',
+  (select value ->> 'id' from expiry_boundary_session),
+  'an active session is reusable one millisecond before its 24-hour expiry'
+);
+
+select isnt(
+  public.get_or_create_review_session(
+    '60000000-0000-0000-0000-000000000006',
+    '2026-09-04 10:00:00+00'
+  ) ->> 'id',
+  (select value ->> 'id' from expiry_boundary_session),
+  'an active session is replaced at its exact 24-hour expiry cutoff'
 );
 
 insert into public.flashcards (id, user_id, front, back, created_at, due) values

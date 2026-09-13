@@ -48,6 +48,26 @@ function check(condition, message) {
   pass(message);
 }
 
+function checkDeepEqual(actual, expected, message) {
+  assert.deepEqual(actual, expected, `FAIL: ${message}`);
+  pass(message);
+}
+
+function canonicalFields(result) {
+  return {
+    requestId: result.requestId,
+    sessionId: result.sessionId,
+    cardId: result.cardId,
+    rating: result.rating,
+    nextDue: result.nextDue,
+    disposition: result.disposition,
+    schedulerVersion: result.schedulerVersion,
+    configVersion: result.configVersion,
+    reviewed_at: result.reviewed_at,
+    schedule_version: result.schedule_version,
+  };
+}
+
 async function createAuthenticatedUser(client, label) {
   const email = `review-${label}-${runId}@example.test`;
   const { data, error } = await client.auth.signUp({ email, password });
@@ -273,6 +293,81 @@ async function main() {
       storedLogs.length === 1,
     "card, log, membership, and session summary advance atomically exactly once",
   );
+
+  const concurrentTrialCount = 3;
+  for (let trial = 0; trial < concurrentTrialCount; trial += 1) {
+    const card = ownerCards[trial + 2];
+    const trialReviewedAt = new Date(reviewedAt.getTime() + (trial + 1) * 1_000);
+    const trialNextDue = new Date(trialReviewedAt.getTime() + 10 * 86_400_000).toISOString();
+    const trialRequestId = randomUUID();
+    const sharedReviewArgs = {
+      p_user_id: ownerId,
+      p_session_id: sessionId,
+      p_request_id: trialRequestId,
+      p_flashcard_id: card.id,
+      p_rating: 3,
+      p_expected_schedule_version: 0,
+      p_reviewed_at: trialReviewedAt.toISOString(),
+      p_post_state: postState(trialNextDue),
+      p_result: canonicalResult({
+        requestId: trialRequestId,
+        sessionId,
+        cardId: card.id,
+        rating: 3,
+        nextDue: trialNextDue,
+      }),
+    };
+
+    // This is practical scheduling evidence through PostgREST. The pgTAP function-order check
+    // separately proves that request-scoped serialization precedes replay detection.
+    const concurrentResults = await Promise.all([
+      fixtureClient.rpc("apply_flashcard_review", sharedReviewArgs),
+      fixtureClient.rpc("apply_flashcard_review", sharedReviewArgs),
+    ]);
+    check(
+      concurrentResults.every(({ error }) => !error),
+      `concurrent review trial ${trial + 1} returns two accepted results`,
+    );
+    const outcomes = concurrentResults.map(({ data }) => data.outcome).sort();
+    checkDeepEqual(
+      outcomes,
+      ["applied", "replayed"],
+      `concurrent review trial ${trial + 1} yields one application and one canonical replay`,
+    );
+    checkDeepEqual(
+      canonicalFields(concurrentResults[0].data),
+      canonicalFields(concurrentResults[1].data),
+      `concurrent review trial ${trial + 1} returns matching canonical fields`,
+    );
+
+    const [{ data: trialCard }, { data: trialMember }, { data: trialSession }, { data: trialLogs }] = await Promise.all(
+      [
+        fixtureClient.from("flashcards").select("schedule_version").eq("id", card.id).single(),
+        fixtureClient
+          .from("flashcard_review_session_cards")
+          .select("state, review_count")
+          .eq("session_id", sessionId)
+          .eq("flashcard_id", card.id)
+          .single(),
+        fixtureClient
+          .from("flashcard_review_sessions")
+          .select("reviewed_count, good_count")
+          .eq("id", sessionId)
+          .single(),
+        fixtureClient.from("flashcard_review_logs").select("id").eq("request_id", trialRequestId),
+      ],
+    );
+    check(
+      trialCard.schedule_version === 1 &&
+        trialMember.review_count === 1 &&
+        trialMember.state === "deferred" &&
+        trialSession.reviewed_count === trial + 2 &&
+        trialSession.good_count === trial + 2 &&
+        trialLogs.length === 1,
+      `concurrent review trial ${trial + 1} mutates card, member, session, and log exactly once`,
+    );
+  }
+
   check(storedCard.updated_at === contentCard.updated_at, "review scheduling preserves an already-open content token");
 
   const { data: editedAfterReview, error: editAfterReviewError } = await ownerClient
