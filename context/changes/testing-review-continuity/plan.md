@@ -331,11 +331,11 @@ problem appears; reverting to the old function would deliberately restore the kn
 
 #### Automated
 
-- [x] 3.1 React continuity suite passes
-- [x] 3.2 All deterministic application and scheduler tests pass
-- [x] 3.3 Complete local database gate and runtime verifier pass with reset cleanup
-- [x] 3.4 Repository deployment check passes
+- [x] 3.1 React continuity suite passes — 84c2193
+- [x] 3.2 All deterministic application and scheduler tests pass — 84c2193
+- [x] 3.3 Complete local database gate and runtime verifier pass with reset cleanup — 84c2193
+- [x] 3.4 Repository deployment check passes — 84c2193
 
 #### Manual
 
-- [x] 3.5 Human confirms cookbook references, commands, and Phase 4 claim boundary
+- [x] 3.5 Human confirms cookbook references, commands, and Phase 4 claim boundary — 84c2193
