@@ -238,6 +238,10 @@ and claim boundaries established by Phases 1–3.
 ordinary-client verifier and API/React references, local-stack prerequisites, exact commands, and what each layer must
 not claim. Leave §§1–5 and §7 unchanged.
 
+**Implementation addendum (2026-09-13)**: Synchronizing the Phase 2 row in §3 from `change opened` to `complete` is a
+documented status-only exception to the frozen-section contract. All four implementation phases and validation gates
+are complete; no substantive strategy content in §§1–5 or §7 changes.
+
 #### 2. Repository validation
 
 **Files**: no production source changes expected.
@@ -334,8 +338,8 @@ the verifier's local reset/cleanup workflow.
 
 #### Manual
 
-- [x] 3.4 Local UI smoke scenarios cover save, edit, delete, and retry/reconciliation messaging — cbace9b
-- [x] 3.5 Visible errors remain associated with the intended card and the decoy card is unaffected — cbace9b
+- [x] 3.4 Local UI smoke scenarios cover save, edit, delete, and retry/reconciliation messaging — cbace9b; evidence: [manual verification](reviews/manual-verification.md)
+- [x] 3.5 Visible errors remain associated with the intended card and the decoy card is unaffected — cbace9b; evidence: [manual verification](reviews/manual-verification.md)
 
 ### Phase 4: Run Gates and Complete the Cookbook Handoff
 
@@ -348,4 +352,4 @@ the verifier's local reset/cleanup workflow.
 #### Manual
 
 - [x] 4.4 Final diff is reviewed for test-only scope, no secrets, no archive edits, and no frozen strategy changes — 32879bd
-- [x] 4.5 Local manual smoke scenarios align with the automated evidence before phase completion — 32879bd
+- [x] 4.5 Local manual smoke scenarios align with the automated evidence before phase completion — 32879bd; evidence: [manual verification](reviews/manual-verification.md)

@@ -4,6 +4,7 @@ const { createClientMock } = vi.hoisted(() => ({ createClientMock: vi.fn() }));
 
 vi.mock("@/lib/supabase", () => ({ createClient: createClientMock }));
 
+import { encodeCollectionCursor, type CollectionFlashcard } from "@/lib/flashcards";
 import { GET, POST } from "@/pages/api/flashcards/collection";
 
 const CARD_ID = "33333333-3333-4333-8333-333333333333";
@@ -87,7 +88,7 @@ function listClient(result: DatabaseResult) {
     calls.selected = fields;
     return query;
   });
-  const from = vi.fn(() => ({ select }));
+  const from = vi.fn((_table: string) => ({ select }));
   return { client: { from }, from, select, calls };
 }
 
@@ -118,7 +119,7 @@ function createClientFake(insertResult: DatabaseResult | Error, reconciliation?:
     calls.selected.push(fields);
     return readBuilder;
   });
-  const from = vi.fn(() => ({ insert, select }));
+  const from = vi.fn((_table: string) => ({ insert, select }));
   return { client: { from }, from, insert, select, single, maybeSingle, calls };
 }
 
@@ -140,6 +141,8 @@ describe("GET /api/flashcards/collection", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ flashcards: [PUBLIC_CARD], nextCursor: null });
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
     expect(fake.calls).toEqual({
       selected: "id, front, back, created_at, updated_at",
       orders: [
@@ -159,8 +162,43 @@ describe("GET /api/flashcards/collection", () => {
     const response = await getCollection({ url: `http://localhost/api/flashcards/collection?cursor=${cursor}` });
 
     expect(response.status).toBe(200);
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
     expect(fake.calls.filter).toBe(
       `created_at.lt.2026-09-12T08:30:00.000Z,and(created_at.eq.2026-09-12T08:30:00.000Z,id.lt.${CARD_ID})`,
+    );
+  });
+
+  it("returns 20 rows and encodes the outgoing cursor from the returned boundary", async () => {
+    const rows = Array.from({ length: 21 }, (_, index) => {
+      const position = index + 1;
+      const minute = String(60 - position).padStart(2, "0");
+
+      return {
+        id: `00000000-0000-4000-8000-${String(position).padStart(12, "0")}`,
+        front: `Front ${position}`,
+        back: `Back ${position}`,
+        created_at: `2026-09-12T09:${minute}:00+00:00`,
+        updated_at: `2026-09-12T09:${minute}:00+00:00`,
+      };
+    });
+    const fake = listClient({ data: rows, error: null });
+    createClientMock.mockReturnValue(fake.client);
+
+    const response = await getCollection();
+    const body: { flashcards: CollectionFlashcard[]; nextCursor: string | null } = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
+    expect(body.flashcards).toHaveLength(20);
+    expect(body.flashcards.at(-1)?.id).toBe(rows[19].id);
+    expect(body.flashcards.some((card) => card.id === rows[20].id)).toBe(false);
+    expect(body.nextCursor).toBe(
+      encodeCollectionCursor({
+        createdAt: "2026-09-12T09:40:00.000Z",
+        id: rows[19].id,
+      }),
     );
   });
 });
@@ -208,6 +246,8 @@ describe("POST /api/flashcards/collection", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ flashcard: PUBLIC_CARD });
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
     expect(fake.insert).toHaveBeenCalledOnce();
     expect(fake.calls.inserted).toEqual({ id: CARD_ID, front: ROW.front, back: ROW.back });
   });
@@ -223,6 +263,8 @@ describe("POST /api/flashcards/collection", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ flashcard: PUBLIC_CARD });
+    expect(fake.from).toHaveBeenNthCalledWith(1, "flashcards");
+    expect(fake.from).toHaveBeenNthCalledWith(2, "flashcards");
     expect(fake.insert).toHaveBeenCalledOnce();
     expect(fake.select).toHaveBeenCalledOnce();
     expect(fake.calls.ids).toEqual([CARD_ID]);
@@ -236,6 +278,8 @@ describe("POST /api/flashcards/collection", () => {
     createClientMock.mockReturnValue(fake.client);
 
     await expectError(await createCard({ id: CARD_ID, front: ROW.front, back: ROW.back }), 409, "save_conflict");
+    expect(fake.from).toHaveBeenNthCalledWith(1, "flashcards");
+    expect(fake.from).toHaveBeenNthCalledWith(2, "flashcards");
     expect(fake.insert).toHaveBeenCalledOnce();
   });
 
@@ -249,6 +293,8 @@ describe("POST /api/flashcards/collection", () => {
     const response = await createCard({ id: CARD_ID, front: ROW.front, back: ROW.back });
 
     expect(response.status).toBe(200);
+    expect(fake.from).toHaveBeenNthCalledWith(1, "flashcards");
+    expect(fake.from).toHaveBeenNthCalledWith(2, "flashcards");
     expect(fake.insert).toHaveBeenCalledOnce();
     expect(fake.select).toHaveBeenCalledOnce();
   });
@@ -260,6 +306,8 @@ describe("POST /api/flashcards/collection", () => {
     const response = await createCard({ id: CARD_ID, front: ROW.front, back: ROW.back, reconcile: true });
 
     expect(response.status).toBe(200);
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
     expect(fake.insert).not.toHaveBeenCalled();
     expect(fake.select).toHaveBeenCalledOnce();
   });

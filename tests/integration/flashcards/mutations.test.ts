@@ -103,7 +103,7 @@ function mutationClient(kind: "update" | "delete", result: DatabaseResult, class
     return classificationBuilder;
   });
   let fromCount = 0;
-  const from = vi.fn(() => {
+  const from = vi.fn((_table: string) => {
     fromCount += 1;
     if (fromCount === 1) return kind === "update" ? { update } : { delete: remove };
     return { select: classificationSelect };
@@ -149,6 +149,8 @@ describe("PATCH /api/flashcards/[id]", () => {
         updatedAt: "2026-09-12T09:45:12.123456Z",
       },
     });
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
     expect(fake.update).toHaveBeenCalledWith({ front: ROW.front, back: ROW.back });
     expect(fake.calls.predicates).toEqual([
       { column: "id", value: TARGET_ID },
@@ -167,6 +169,8 @@ describe("DELETE /api/flashcards/[id]", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ deletedId: TARGET_ID });
+    expect(fake.from).toHaveBeenCalledOnce();
+    expect(fake.from).toHaveBeenCalledWith("flashcards");
     expect(fake.remove).toHaveBeenCalledOnce();
     expect(fake.calls.predicates).toEqual([
       { column: "id", value: TARGET_ID },
@@ -194,6 +198,8 @@ describe.each([
     createClientMock.mockReturnValue(fake.client);
 
     await expectError(await mutationRequest(handler, body()), 409, "mutation_conflict");
+    expect(fake.from).toHaveBeenNthCalledWith(1, "flashcards");
+    expect(fake.from).toHaveBeenNthCalledWith(2, "flashcards");
     expect(fake.classificationSelect).toHaveBeenCalledWith("id, updated_at");
     expect(fake.calls.predicates.at(-1)).toEqual({ column: "id", value: TARGET_ID });
   });
@@ -217,6 +223,8 @@ describe.each([
 
       await expectError(response, 404, "flashcard_not_found");
       await expect(responseCopy.json()).resolves.not.toHaveProperty("flashcard");
+      expect(fake.from).toHaveBeenNthCalledWith(1, "flashcards");
+      expect(fake.from).toHaveBeenNthCalledWith(2, "flashcards");
     },
   );
 
@@ -229,6 +237,8 @@ describe.each([
     createClientMock.mockReturnValue(fake.client);
 
     await expectError(await mutationRequest(handler, body()), 503, "mutation_ambiguous");
+    expect(fake.from).toHaveBeenNthCalledWith(1, "flashcards");
+    expect(fake.from).toHaveBeenNthCalledWith(2, "flashcards");
     expect(kind === "update" ? fake.update : fake.remove).toHaveBeenCalledOnce();
   });
 });

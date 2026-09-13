@@ -137,7 +137,7 @@ describe("FlashcardCollection recovery and target identity", () => {
   });
 
   it("applies a successful PATCH only to the matching card ID", async () => {
-    stubFetch(collectionResponse([TARGET, DECOY]), Response.json({ flashcard: UPDATED_TARGET }));
+    const fetchMock = stubFetch(collectionResponse([TARGET, DECOY]), Response.json({ flashcard: UPDATED_TARGET }));
     const { user } = await renderCollection();
 
     await editTarget(user);
@@ -149,6 +149,43 @@ describe("FlashcardCollection recovery and target identity", () => {
     expect(screen.getByText(DECOY.back)).toBeTruthy();
     expect(cardFor(UPDATED_TARGET.front).dataset.cardId).toBe(TARGET.id);
     expect(cardFor(DECOY.front).dataset.cardId).toBe(DECOY.id);
+    expect(fetchMock.mock.calls[1]).toEqual([
+      `/api/flashcards/${TARGET.id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: TARGET.id,
+          front: UPDATED_TARGET.front,
+          back: UPDATED_TARGET.back,
+          updatedAt: TARGET.updatedAt,
+        }),
+      },
+    ]);
+  });
+
+  it("applies a successful DELETE only to the matching card ID", async () => {
+    const fetchMock = stubFetch(collectionResponse([TARGET, DECOY]), Response.json({ deletedId: TARGET.id }));
+    const { user } = await renderCollection();
+
+    await deleteTarget(user);
+
+    await waitFor(() => {
+      expect(screen.queryByText(TARGET.front)).toBeNull();
+    });
+    expect(screen.getByText(DECOY.front)).toBeTruthy();
+    expect(cardFor(DECOY.front).dataset.cardId).toBe(DECOY.id);
+    expect(fetchMock.mock.calls[1]).toEqual([
+      `/api/flashcards/${TARGET.id}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: TARGET.id,
+          updatedAt: TARGET.updatedAt,
+        }),
+      },
+    ]);
   });
 
   it("reconciles an ambiguous PATCH with one read-only rebuild and no mutation replay", async () => {
@@ -166,6 +203,19 @@ describe("FlashcardCollection recovery and target identity", () => {
       expect(fetchMock).toHaveBeenCalledTimes(3);
     });
     expect(fetchMock.mock.calls.map(([, init]) => init?.method ?? "GET")).toEqual(["GET", "PATCH", "GET"]);
+    expect(fetchMock.mock.calls[1]).toEqual([
+      `/api/flashcards/${TARGET.id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: TARGET.id,
+          front: UPDATED_TARGET.front,
+          back: UPDATED_TARGET.back,
+          updatedAt: TARGET.updatedAt,
+        }),
+      },
+    ]);
     expect(screen.getByText(DECOY.front)).toBeTruthy();
   });
 
@@ -184,6 +234,17 @@ describe("FlashcardCollection recovery and target identity", () => {
     });
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(fetchMock.mock.calls.map(([, init]) => init?.method ?? "GET")).toEqual(["GET", "DELETE", "GET"]);
+    expect(fetchMock.mock.calls[1]).toEqual([
+      `/api/flashcards/${TARGET.id}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: TARGET.id,
+          updatedAt: TARGET.updatedAt,
+        }),
+      },
+    ]);
     expect(screen.getByText(DECOY.front)).toBeTruthy();
   });
 });

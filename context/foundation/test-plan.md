@@ -55,7 +55,7 @@ Expected outcomes come from requirements and independent fixtures, never product
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | AI generation validity | Reject unusable output, recover cleanly, assess source fidelity | #1, #2 | Contract/integration; human rubric; selective AI review | complete | context/changes/testing-ai-generation-validity/ |
-| 2 | Collection persistence and ownership | Preserve selected cards and isolate reads/mutations | #3, #4, #6 | Database + API integration | change opened | context/changes/testing-collection-persistence-and-ownership/ |
+| 2 | Collection persistence and ownership | Preserve selected cards and isolate reads/mutations | #3, #4, #6 | Database + API integration | complete | context/changes/testing-collection-persistence-and-ownership/ |
 | 3 | Review continuity and critical journey | Preserve progress, respect due dates, prove browser crossings | #5; journey across #1/#3/#4 | Integration + minimal e2e | not started | — |
 
 Phase 1 adds only necessary runner setup. Reuse existing checks. Each phase ends by updating §6. Status vocabulary: `not started`, `change opened`, `researched`, `planned`, `implementing`, `complete`.
