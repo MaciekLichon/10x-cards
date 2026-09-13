@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test("created flashcard persists after page reload", async ({ page }) => {
   const uniqueSuffix = Date.now();
