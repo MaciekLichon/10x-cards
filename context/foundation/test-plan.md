@@ -56,8 +56,8 @@ Expected outcomes come from requirements and independent fixtures, never product
 |---|---|---|---|---|---|---|
 | 1 | AI generation validity | Reject unusable output, recover cleanly, assess source fidelity | #1, #2 | Contract/integration; human rubric; selective AI review | complete | context/changes/testing-ai-generation-validity/ |
 | 2 | Collection persistence and ownership | Preserve selected cards and isolate reads/mutations | #3, #4, #6 | Database + API integration | complete | context/changes/testing-collection-persistence-and-ownership/ |
-| 3 | Review continuity | Preserve progress and respect due dates | #5 | Integration | planned | context/changes/testing-review-continuity/ |
-| 4 | Critical browser journey | Prove auth, generation, persistence, and ownership crossings in the browser | Journey across #1/#3/#4 | Minimal e2e | not started | — |
+| 3 | Review continuity | Preserve progress and respect due dates | #5 | Integration | complete | context/changes/testing-review-continuity/ |
+| 4 | Critical browser journey | Prove auth, generation, persistence, and ownership crossings in the browser | Journey across #1/#3/#4 | Minimal e2e | complete | context/changes/testing-critical-browser-journey/ |
 
 Phase 1 adds only necessary runner setup. Reuse existing checks. Each phase ends by updating §6. Status vocabulary: `not started`, `change opened`, `researched`, `planned`, `implementing`, `complete`.
 
@@ -217,7 +217,45 @@ cookies, middleware, hydration, routing, and full user journeys remain Phase 4.
 
 ### 6.6 Critical browser journey
 
-TBD — see §3 Phase 4. Record minimal auth/cookie/UI crossings that cheaper tests cannot prove, test location, naming, canonical reference, fixture isolation and run command. Stub AI responses for deterministic journey tests.
+Playwright 1.63.0 runs exactly three Chromium risk journeys. `tests/e2e/seed.spec.ts` is the canonical project E2E
+exemplar and protects risk #3; `tests/e2e/invalid-generation-recovery.spec.ts` protects risk #1; and
+`tests/e2e/ownership-isolation.spec.ts` protects risk #4. Shared provisioning and isolation live in
+`tests/e2e/fixtures.ts`, with environment validation in `tests/e2e/env.ts`. Each spec is independently runnable and
+owns one setup/action/assertion/cleanup flow; unique values prevent collisions during retries, reordered runs, or
+parallel execution.
+
+The suite requires an isolated, resettable local Supabase stack. Configure loopback `SUPABASE_URL`, `SUPABASE_KEY`,
+and `SUPABASE_SERVICE_ROLE_KEY` values in `.env` or `.dev.vars`. Also set non-empty, test-only `OPENROUTER_API_KEY` and
+`OPENROUTER_MODEL` values so the rendered generation controls are enabled. The environment guard refuses non-loopback
+Supabase hosts before creating a privileged client. No manually prepared account or
+`playwright/.auth/auth.json` file is required.
+
+The fixture creates a unique confirmed primary user for every test, signs in through the real
+`/api/auth/signin` endpoint, and gives the default page its in-memory cookie state. Additional authenticated contexts
+receive their own explicit user state; anonymous contexts must pass the explicit empty state
+`{ cookies: [], origins: [] }`. Auxiliary contexts close before user cleanup. Every successfully created user ID is
+registered immediately, every registered user is hard-deleted even if an earlier deletion fails, and any deletion
+error fails the test before the final safety reset. The foreign-key cascade removes that user's cards.
+
+Run the individual risks or the complete local gate under Chromium:
+
+```bash
+npm run test:e2e -- tests/e2e/invalid-generation-recovery.spec.ts --project=chromium
+npm run test:e2e -- tests/e2e/seed.spec.ts --project=chromium
+npm run test:e2e -- tests/e2e/ownership-isolation.spec.ts --project=chromium
+npm run test:e2e -- --list --project=chromium
+npm run db:reset && npm run test:e2e -- --project=chromium && npm run db:reset
+```
+
+Claim boundaries are strict. Risk #1 browser-routes both deterministic generation responses, and risk #3
+browser-routes its deterministic proposal response plus only the first failed save; these intercepted generation
+requests never contact OpenRouter. Risk #3's retry reaches the real Astro save endpoint and local database. Risk #4
+keeps application sign-in, cookies, middleware, anonymous API denial, rendered collection loads, and owner persistence
+real. These Chromium journeys prove visible recovery, selected-card retry durability, and rendered anonymous/other-user
+read isolation. The lower-level generation suites remain authoritative for OpenRouter response decoding, while the
+handler, pgTAP, and ordinary-client RLS suites remain authoritative for cross-owner mutation denial. This is local,
+Chromium-only coverage: it does not claim CI, Firefox/WebKit, visual-regression, real-provider, or cross-owner browser
+mutation evidence.
 
 ## 7. What We Deliberately Don't Test
 

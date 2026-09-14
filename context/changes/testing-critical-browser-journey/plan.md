@@ -437,29 +437,29 @@ discarded locally once the fixture no longer consumes `playwright/.auth/auth.jso
 
 #### Automated
 
-- [x] 4.1 Risk #4 spec passes independently
-- [x] 4.2 Anonymous page and API access are denied
-- [x] 4.3 Other-user collection excludes the owner card and owner reload retains it
-- [x] 4.4 Deliberate access-isolation break makes the spec fail and reverting restores green
-- [x] 4.5 Existing ownership verification remains green
+- [x] 4.1 Risk #4 spec passes independently — 04275d2
+- [x] 4.2 Anonymous page and API access are denied — 04275d2
+- [x] 4.3 Other-user collection excludes the owner card and owner reload retains it — 04275d2
+- [x] 4.4 Deliberate access-isolation break makes the spec fail and reverting restores green — 04275d2
+- [x] 4.5 Existing ownership verification remains green — 04275d2
 
 #### Manual
 
-- [x] 4.6 Anonymous and other-user views disclose no owner data
-- [x] 4.7 Browser claims remain limited to read isolation
+- [x] 4.6 Anonymous and other-user views disclose no owner data — 04275d2
+- [x] 4.7 Browser claims remain limited to read isolation — 04275d2
 
 ### Phase 5: Cookbook Handoff and Complete Local Gates
 
 #### Automated
 
-- [ ] 5.1 Playwright lists exactly three risk-bound Chromium tests
-- [ ] 5.2 Complete browser gate passes against a reset local stack
-- [ ] 5.3 Database and ordinary-client ownership gates pass
-- [ ] 5.4 Application tests and repository checks pass
-- [ ] 5.5 Cookbook matches the implemented suite and evidence boundaries
+- [x] 5.1 Playwright lists exactly three risk-bound Chromium tests
+- [x] 5.2 Complete browser gate passes against a reset local stack
+- [x] 5.3 Database and ordinary-client ownership gates pass
+- [x] 5.4 Application tests and repository checks pass
+- [x] 5.5 Cookbook matches the implemented suite and evidence boundaries
 
 #### Manual
 
-- [ ] 5.6 Clean local run leaves no fixture or secret artifacts
-- [ ] 5.7 Specs remain independent and mapped one-to-one to risks
-- [ ] 5.8 Test plan states the deliberate browser-coverage limits
+- [x] 5.6 Clean local run leaves no fixture or secret artifacts
+- [x] 5.7 Specs remain independent and mapped one-to-one to risks
+- [x] 5.8 Test plan states the deliberate browser-coverage limits
