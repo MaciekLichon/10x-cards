@@ -336,6 +336,10 @@ remain unchanged.
 **Implementation Note**: Update the rollout status only after every preceding phase and the complete local gate pass.
 Pause for final human confirmation before closing the change.
 
+**Scope Addendum**: Phase 5 also reconciled the stale Phase 3 rollout row from `planned` to `complete`. The Review
+continuity implementation and review had already landed; this documentation-only correction keeps the foundation
+rollout table aligned with repository state.
+
 ---
 
 ## Testing Strategy

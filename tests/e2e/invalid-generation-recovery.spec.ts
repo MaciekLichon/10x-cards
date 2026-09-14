@@ -37,12 +37,14 @@ test.describe("Risk #1 — invalid generation recovery", () => {
     // Open the real authenticated workspace and submit a unique valid source.
     await page.goto("/dashboard");
     await expect(page.getByRole("heading", { name: "AI flashcard workspace" })).toBeVisible();
-    await page.waitForFunction(() =>
-      Array.from(document.getElementsByTagName("astro-island")).every((island) => !island.hasAttribute("ssr")),
-    );
     const sourceInput = page.getByRole("textbox", { name: "Source text" });
-    await sourceInput.fill(source);
-    await expect(page.getByText(new RegExp(`^${source.trim().length.toLocaleString()} / 10,000$`))).toBeVisible();
+    await expect(async () => {
+      await sourceInput.fill("");
+      await sourceInput.fill(source);
+      await expect(page.getByText(new RegExp(`^${source.trim().length.toLocaleString()} / 10,000$`))).toBeVisible({
+        timeout: 500,
+      });
+    }).toPass({ timeout: 15_000 });
     await page.getByRole("button", { name: "Generate flashcards" }).click();
 
     // The representative invalid output is visible while the exact source remains editable.

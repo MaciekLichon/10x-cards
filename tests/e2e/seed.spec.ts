@@ -50,12 +50,12 @@ test.describe("Risk #3 — selected-card failure recovery and durability", () =>
     // Generate a deterministic mixed proposal set in the real authenticated workspace.
     await page.goto("/dashboard");
     await expect(page.getByRole("heading", { name: "AI flashcard workspace" })).toBeVisible();
-    await page.waitForFunction(() =>
-      Array.from(document.getElementsByTagName("astro-island")).every((island) => !island.hasAttribute("ssr")),
-    );
     const sourceInput = page.getByRole("textbox", { name: "Source text" });
-    await sourceInput.fill(source);
-    await expect(page.getByText(`${source.trim().length.toLocaleString()} / 10,000`)).toBeVisible();
+    await expect(async () => {
+      await sourceInput.fill("");
+      await sourceInput.fill(source);
+      await expect(page.getByText(`${source.trim().length.toLocaleString()} / 10,000`)).toBeVisible({ timeout: 500 });
+    }).toPass({ timeout: 15_000 });
     await page.getByRole("button", { name: "Generate flashcards" }).click();
     const proposalRegion = page.getByRole("region", { name: "Review proposals" });
     await expect(proposalRegion).toBeVisible();
