@@ -452,14 +452,14 @@ discarded locally once the fixture no longer consumes `playwright/.auth/auth.jso
 
 #### Automated
 
-- [x] 5.1 Playwright lists exactly three risk-bound Chromium tests
-- [x] 5.2 Complete browser gate passes against a reset local stack
-- [x] 5.3 Database and ordinary-client ownership gates pass
-- [x] 5.4 Application tests and repository checks pass
-- [x] 5.5 Cookbook matches the implemented suite and evidence boundaries
+- [x] 5.1 Playwright lists exactly three risk-bound Chromium tests — e6ed29f
+- [x] 5.2 Complete browser gate passes against a reset local stack — e6ed29f
+- [x] 5.3 Database and ordinary-client ownership gates pass — e6ed29f
+- [x] 5.4 Application tests and repository checks pass — e6ed29f
+- [x] 5.5 Cookbook matches the implemented suite and evidence boundaries — e6ed29f
 
 #### Manual
 
-- [x] 5.6 Clean local run leaves no fixture or secret artifacts
-- [x] 5.7 Specs remain independent and mapped one-to-one to risks
-- [x] 5.8 Test plan states the deliberate browser-coverage limits
+- [x] 5.6 Clean local run leaves no fixture or secret artifacts — e6ed29f
+- [x] 5.7 Specs remain independent and mapped one-to-one to risks — e6ed29f
+- [x] 5.8 Test plan states the deliberate browser-coverage limits — e6ed29f

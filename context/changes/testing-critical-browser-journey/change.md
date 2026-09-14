@@ -1,9 +1,9 @@
 ---
 change_id: testing-critical-browser-journey
 title: Test the critical browser journey
-status: implementing
+status: implemented
 created: 2026-09-13
-updated: 2026-09-13
+updated: 2026-09-14
 archived_at: null
 ---
 
