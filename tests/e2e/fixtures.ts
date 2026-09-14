@@ -31,7 +31,7 @@ interface UserManager {
 interface E2EFixtures {
   userManager: UserManager;
   primaryUser: E2EUser;
-  createAuthenticatedContext(label?: string): Promise<AuthenticatedContext>;
+  createAuthenticatedContext: (label?: string) => Promise<AuthenticatedContext>;
 }
 
 async function authenticateThroughApplication(baseURL: string, email: string, password: string): Promise<StorageState> {

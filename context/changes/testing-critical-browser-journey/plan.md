@@ -423,30 +423,30 @@ discarded locally once the fixture no longer consumes `playwright/.auth/auth.jso
 
 #### Automated
 
-- [x] 3.1 Canonical risk #3 seed passes independently
-- [x] 3.2 Failed and retried saves preserve identical selected intent
-- [x] 3.3 Deliberate selection or durability break makes the seed fail and reverting restores green
-- [x] 3.4 Existing save and workspace integration tests remain green
+- [x] 3.1 Canonical risk #3 seed passes independently — 691b90f
+- [x] 3.2 Failed and retried saves preserve identical selected intent — 691b90f
+- [x] 3.3 Deliberate selection or durability break makes the seed fail and reverting restores green — 691b90f
+- [x] 3.4 Existing save and workspace integration tests remain green — 691b90f
 
 #### Manual
 
-- [x] 3.5 Seed remains free of the five E2E anti-patterns
-- [x] 3.6 Rendered failed-save state retains the complete reviewed set
+- [x] 3.5 Seed remains free of the five E2E anti-patterns — 691b90f
+- [x] 3.6 Rendered failed-save state retains the complete reviewed set — 691b90f
 
 ### Phase 4: Risk #4 — Anonymous and Cross-Account Read Isolation
 
 #### Automated
 
-- [ ] 4.1 Risk #4 spec passes independently
-- [ ] 4.2 Anonymous page and API access are denied
-- [ ] 4.3 Other-user collection excludes the owner card and owner reload retains it
-- [ ] 4.4 Deliberate access-isolation break makes the spec fail and reverting restores green
-- [ ] 4.5 Existing ownership verification remains green
+- [x] 4.1 Risk #4 spec passes independently
+- [x] 4.2 Anonymous page and API access are denied
+- [x] 4.3 Other-user collection excludes the owner card and owner reload retains it
+- [x] 4.4 Deliberate access-isolation break makes the spec fail and reverting restores green
+- [x] 4.5 Existing ownership verification remains green
 
 #### Manual
 
-- [ ] 4.6 Anonymous and other-user views disclose no owner data
-- [ ] 4.7 Browser claims remain limited to read isolation
+- [x] 4.6 Anonymous and other-user views disclose no owner data
+- [x] 4.7 Browser claims remain limited to read isolation
 
 ### Phase 5: Cookbook Handoff and Complete Local Gates
 
