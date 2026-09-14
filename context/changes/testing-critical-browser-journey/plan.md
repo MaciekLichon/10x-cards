@@ -410,28 +410,28 @@ discarded locally once the fixture no longer consumes `playwright/.auth/auth.jso
 
 #### Automated
 
-- [x] 2.1 Risk #1 spec passes independently
-- [x] 2.2 Deliberate recovery break makes the spec fail and reverting restores green
-- [x] 2.3 Existing generation integration tests remain green
+- [x] 2.1 Risk #1 spec passes independently — 88e7ffb
+- [x] 2.2 Deliberate recovery break makes the spec fail and reverting restores green — 88e7ffb
+- [x] 2.3 Existing generation integration tests remain green — 88e7ffb
 
 #### Manual
 
-- [x] 2.4 Rendered generation recovery is understandable
-- [x] 2.5 Spec claims only the browser recovery boundary it proves
+- [x] 2.4 Rendered generation recovery is understandable — 88e7ffb
+- [x] 2.5 Spec claims only the browser recovery boundary it proves — 88e7ffb
 
 ### Phase 3: Risk #3 — Selected-Card Failure Recovery and Durability
 
 #### Automated
 
-- [ ] 3.1 Canonical risk #3 seed passes independently
-- [ ] 3.2 Failed and retried saves preserve identical selected intent
-- [ ] 3.3 Deliberate selection or durability break makes the seed fail and reverting restores green
-- [ ] 3.4 Existing save and workspace integration tests remain green
+- [x] 3.1 Canonical risk #3 seed passes independently
+- [x] 3.2 Failed and retried saves preserve identical selected intent
+- [x] 3.3 Deliberate selection or durability break makes the seed fail and reverting restores green
+- [x] 3.4 Existing save and workspace integration tests remain green
 
 #### Manual
 
-- [ ] 3.5 Seed remains free of the five E2E anti-patterns
-- [ ] 3.6 Rendered failed-save state retains the complete reviewed set
+- [x] 3.5 Seed remains free of the five E2E anti-patterns
+- [x] 3.6 Rendered failed-save state retains the complete reviewed set
 
 ### Phase 4: Risk #4 — Anonymous and Cross-Account Read Isolation
 
