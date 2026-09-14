@@ -1,8 +1,28 @@
-# 10x Astro Starter
+# 10xCards
 
-![](./public/template.png)
+10xCards is a web application that helps developers turn learning materials into flashcards and review them using
+spaced repetition. A signed-in user can paste source text, generate flashcard proposals with AI, edit or reject the
+proposals, save the selected cards, manage their private collection, and complete scheduled review sessions.
 
-A modern, opinionated starter template for building fast, accessible web applications.
+The application is built as a 10xDevs MVP. Its product requirements, architectural decisions, roadmap, and test
+strategy are maintained in [`context/foundation/`](./context/foundation/).
+
+## Core Features
+
+- Email and password registration, confirmation, sign-in, and sign-out with Supabase Auth
+- AI-assisted flashcard generation from 1,000–10,000 characters of source text through OpenRouter
+- Review and editing of generated proposals before persistence
+- Manual creation, browsing, editing, and deletion of flashcards
+- User-owned collections protected by PostgreSQL row-level security
+- FSRS-based review sessions with durable progress and scheduled due dates
+
+## Main User Flow
+
+1. Create an account, confirm the email address, and sign in.
+2. Paste learning material into the workspace on `/dashboard`.
+3. Generate flashcard proposals, then accept, edit, or reject each proposal.
+4. Save the selected proposals to the private collection.
+5. Manage cards under `/dashboard/collection` or review due cards under `/dashboard/review`.
 
 ## Tech Stack
 
@@ -23,8 +43,8 @@ A modern, opinionated starter template for building fast, accessible web applica
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+git clone https://github.com/MaciekLichon/10x-cards.git
+cd 10x-cards
 ```
 
 2. Install dependencies:
@@ -33,21 +53,37 @@ cd 10x-astro-starter
 npm install
 ```
 
-3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
-
-4. Create a `.dev.vars` file for local Cloudflare dev secrets:
+3. Create the local environment files:
 
 ```bash
+cp .env.example .env
 cp .env.example .dev.vars
 ```
 
-5. Run the development server:
+4. Start Supabase and configure `SUPABASE_URL` and `SUPABASE_KEY` in both files as described in
+   [Supabase Configuration](#supabase-configuration).
+
+5. Configure `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` to enable AI generation. The remaining variables are documented
+   in `.env.example` and the sections below.
+
+6. Apply the database migrations and start the development server:
 
 ```bash
+npm run db:reset
 npm run dev
 ```
 
-## AI flashcard configuration
+The application is available at `http://localhost:4321`. Local email confirmation messages are available through the
+Mailpit URL reported by `npx supabase status`.
+
+## Product Documentation
+
+- [`context/foundation/prd.md`](./context/foundation/prd.md) — problem, scope, user stories, and requirements
+- [`context/foundation/tech-stack.md`](./context/foundation/tech-stack.md) — selected stack and architectural rationale
+- [`context/foundation/roadmap.md`](./context/foundation/roadmap.md) — milestone and delivery progress
+- [`context/foundation/test-plan.md`](./context/foundation/test-plan.md) — risk-based testing strategy
+
+## AI Flashcard Configuration
 
 AI generation uses OpenRouter from server code only. Copy `.env.example` to both ignored local files, `.env` and
 `.dev.vars`, then set `OPENROUTER_API_KEY` and `OPENROUTER_MODEL`. The model is configuration-driven and must support the
@@ -82,6 +118,8 @@ npm run build
 - `npm run preview` - Preview production build
 - `npm run test` - Run application tests once with Vitest
 - `npm run test:watch` - Run application tests in Vitest watch mode
+- `npm run test:e2e` - Run the Playwright browser test suite
+- `npm run test:e2e:ui` - Open the Playwright test runner UI
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
@@ -91,6 +129,8 @@ npm run build
 - `npm run db:types` - Regenerate TypeScript types from the local database schema
 - `npm run db:types:check` - Regenerate database types and fail if the committed file changes
 - `npm run db:verify-rls` - Verify flashcard ownership through local authenticated clients
+- `npm run verify:fsrs` - Verify the pinned FSRS scheduler behavior
+- `npm run verify:spaced-repetition` - Verify spaced-repetition database behavior
 - `npm run cf:types` - Regenerate Cloudflare Worker binding types
 - `npm run cf:types:check` - Verify generated Worker binding types are current
 - `npm run deploy:check` - Run all checks and a Wrangler deployment dry-run
@@ -99,14 +139,18 @@ npm run build
 
 ```md
 .
+├── context/ # Product foundation, active changes, and archived change records
+├── scripts/ # Local verification scripts
 ├── src/
+│ ├── components/ # Shared Astro and React components
 │ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ └── assets/ # Static assets
-├── public/ # Public assets
-├── wrangler.jsonc # Cloudflare Workers config
+│ ├── lib/ # Auth, persistence, OpenRouter, and FSRS logic
+│ ├── pages/ # File-based pages and API endpoints
+│ └── styles/ # Global styles
+├── supabase/ # Local configuration, migrations, seed, and database tests
+├── tests/ # Integration, browser, and AI-quality tests
+├── public/ # Static assets
+└── wrangler.jsonc # Cloudflare Workers configuration
 ```
 
 ## Supabase Configuration
@@ -260,12 +304,14 @@ npm run deploy:check
 
 ### Auth routes
 
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
+| Route                   | Description                                                             |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `/auth/signin`          | Email/password sign-in form                                             |
+| `/auth/signup`          | Email/password sign-up form                                             |
+| `/auth/confirm-email`   | Post-signup "check your inbox" page                                     |
+| `/dashboard`            | AI flashcard workspace (redirects to `/auth/signin` if unauthenticated) |
+| `/dashboard/collection` | Private flashcard collection and CRUD management                        |
+| `/dashboard/review`     | FSRS-based review session                                               |
 
 Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_ROUTES` array there to require authentication.
 
